@@ -6,7 +6,7 @@ module Bunchball
       end
       
       def self.post(api_method, params = {})
-        response = HTTParty.post(Bunchball::Nitro.endpoint, :body => params.merge(request_defaults(api_method)))
+        response = HTTParty.post(Bunchball::Nitro.endpoint, :body => request_defaults(api_method).merge(params))
         
         if response.code != 200
           raise "There was an error!"
@@ -16,7 +16,7 @@ module Bunchball
       end
       
       def self.get(api_method, params = {})    
-        response = HTTParty.get(Bunchball::Nitro.endpoint, :body => params.merge(request_defaults(api_method)))
+        response = HTTParty.get(Bunchball::Nitro.endpoint, :body => request_defaults(api_method).merge(params))
         
         if response.code != 200
           raise "There was an error!"
