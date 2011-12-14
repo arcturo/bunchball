@@ -1,0 +1,33 @@
+module Bunchball
+  module Nitro
+    class ApiBase
+      def self.request_defaults(api_method)
+        { :asyncToken => Bunchball::Nitro.async_token, :sessionKey => Bunchball::Nitro.session_key, :method => api_method }
+      end
+      
+      def self.post(api_method, params = {})
+        response = HTTParty.post(Bunchball::Nitro.endpoint, :body => params.merge(request_defaults(api_method)))
+        
+        if response.code != 200
+          raise "There was an error!"
+        else
+          response
+        end
+      end
+      
+      def self.get(api_method, params = {})    
+        response = HTTParty.get(Bunchball::Nitro.endpoint, :body => params.merge(request_defaults(api_method)))
+        
+        if response.code != 200
+          raise "There was an error!"
+        else
+          response
+        end
+      end
+      
+      def self.process_error(error_response)
+        
+      end
+    end
+  end
+end
