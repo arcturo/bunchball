@@ -22,10 +22,12 @@ module Bunchball
       end
       
       def login(user_id, api_key = nil)
-        unless @session_key
-          response = HTTParty.post(endpoint, :body => {:method => "user.login", :userId => user_id, :apiKey => api_key || Bunchball::Nitro.api_key})
-          @session_key = response['Nitro']['Login']['sessionKey']
-        end
+        @session_key ||= authenticate(user_id, api_key)
+      end
+      
+      def authenticate(user_id, api_key = nil)
+        response = HTTParty.post(endpoint, :body => {:method => "user.login", :userId => user_id, :apiKey => api_key || Bunchball::Nitro.api_key})
+        response['Nitro']['Login']['sessionKey']
       end
       
       def login_admin(user_name, password, api_key = nil)
