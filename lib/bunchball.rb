@@ -4,6 +4,7 @@ require 'httparty'
 
 require 'bunchball/nitro/api_base'
 require 'bunchball/nitro/actions'
+require 'bunchball/nitro/user'
 
 module Bunchball
   VERSION = '1.0.0'
@@ -50,7 +51,7 @@ module Bunchball
       end
     
       def random_async_token
-        ([srand(10), rand(10), rand(10)] * 3).join("-#{rand(30)}")
+        ([rand(10), rand(10), rand(10)] * 3).join("-#{rand(30)}")
       end
     
       def endpoint=(url)
