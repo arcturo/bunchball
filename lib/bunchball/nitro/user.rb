@@ -35,6 +35,10 @@ module Bunchball
         response = post("user.getResponses", :userId => user_id)
         return response['Nitro']['responses']
       end
+
+      def self.get_action_history(user_id, params = {})
+        response = post("user.getActionHistory", params.merge(:userId => user_id))
+      end
     end
   end
 end
