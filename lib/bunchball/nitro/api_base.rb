@@ -7,32 +7,32 @@ module Bunchball
       
       def self.post(api_method, params = {})
         pp "In ApiBase.post('#{api_method}', #{params})"
-        @_response = HTTParty.post(Bunchball::Nitro.endpoint, :body => request_defaults(api_method).merge(params))
+        @@response = HTTParty.post(Bunchball::Nitro.endpoint, :body => request_defaults(api_method).merge(params))
         
-        if @_response.code != 200
+        if @@response.code != 200
           raise "There was an error!"
         else
           pp "*"*80
-          pp @_response.code
-          pp @_response.class
+          pp @@response.code
+          pp @@response.class
           pp "*"*80
-          pp @_response
+          pp @@response
           pp "*"*80
-          @_response
+          @@response
         end
       end
 
       def self.last_response
-        @_response
+        @@response
       end
 
       def self.get(api_method, params = {})    
-        @_response = HTTParty.get(Bunchball::Nitro.endpoint, :body => request_defaults(api_method).merge(params))
+        @@response = HTTParty.get(Bunchball::Nitro.endpoint, :body => request_defaults(api_method).merge(params))
 
-        if @_response.code != 200
+        if @@response.code != 200
           raise "There was an error!"
         else
-          @_response
+          @@response
         end
       end
 
