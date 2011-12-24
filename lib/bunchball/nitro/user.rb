@@ -31,13 +31,31 @@ module Bunchball
         return response["Nitro"]["res"] == "ok"
       end
 
+      def transfer_points_to_user(dest_user_id)
+        User.transfer_points(@user_id, dest_user_id)
+      end
+
       def self.get_responses(user_id)
         response = post("user.getResponses", :userId => user_id)
         return response['Nitro']['responses']
       end
 
+      def get_responses
+        User.get_responses(@user_id)
+      end
+
       def self.get_action_history(user_id, params = {})
         response = post("user.getActionHistory", params.merge(:userId => user_id))
+        # While we figure out what all getActionHistory *might* return, let's just leave a little alert here
+        raise unless response['Nitro']['ActionHistoryRecord'].keys.size < 2
+        # I think this API call may return multiple result arrays, but I'm
+        # not certain. So for now, just return the one.
+        return response['Nitro']['ActionHistoryRecord']['ActionHistoryItem']
+      end
+
+      # For instance method, just add @user_id and pass it up to the class method.
+      def get_action_history(params = {})
+        User.get_action_history(@user_id ,params)
       end
     end
   end
