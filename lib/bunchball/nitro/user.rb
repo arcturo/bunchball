@@ -10,21 +10,6 @@ module Bunchball
         {:sessionKey => @session_key}
       end
 
-      def log_action(tags, params = {})
-        Actions.log_for_user(@user_id, tags, session.merge(params))
-      end
-
-      def self.exists(user_id, params = {})
-        params[:storeResponse] = params[:storeResponse].to_s if params[:storeResponse]
-        response = post("user.exists", params.merge(:userId => user_id))
-        return response["Nitro"]["Exists"] == "true"
-      end
-
-      def self.modify_user_id(old_user_id, new_user_id)
-        response = post("user.modifyUserId", params.merge(:oldUserId => old_user_id, :newUserId => new_user_id))
-        return response["Nitro"]["res"] == "ok"
-      end
-
       def self.credit_points(user_id, points, params = {})
         response = post("user.creditPoints", {:userId => user_id, :points => points.to_i}.merge(params))
         return response['Nitro']['User']
@@ -41,6 +26,58 @@ module Bunchball
 
       def debit_points(points, params = {})
         response = User.debit_points(@user_id, points, params)
+      end
+
+      def self.exists(user_id, params = {})
+        params[:storeResponse] = params[:storeResponse].to_s if params[:storeResponse]
+        response = post("user.exists", {:userId => user_id}.merge(params))
+        return response["Nitro"]["Exists"] == "true"
+      end
+
+      def self.get_action_history(user_id, params = {})
+        response = post("user.getActionHistory", {:userId => user_id}.merge(params))
+        # While we figure out what all getActionHistory *might* return, let's just leave a little alert here
+        raise unless response['Nitro']['ActionHistoryRecord'].keys.size < 2
+        # I think this API call may return multiple result arrays, but I'm
+        # not certain. So for now, just return the one.
+        return response['Nitro']['ActionHistoryRecord']['ActionHistoryItem']
+      end
+
+      # For instance method, just add @user_id and pass it up to the class method.
+      def get_action_history(params = {})
+        User.get_action_history(@user_id ,params)
+      end
+
+      def self.get_action_target_value(user_id, tag, target)
+        # Let post add the required sessionKey
+        response = post("user.getActionTargetValue", {:userId => user_id, :tag => tag, :target => target})
+        return response['Nitro']['targetValue']
+      end
+
+      # For instance method, just add @user_id and pass it up to the class method.
+      def get_action_target_value(tag, target)
+        User.get_action_target_value(@user_id, tag, target)
+      end
+
+      def self.get_challenge_progress(user_id, params = {})
+        response = post("user.getChallengeProgress", {:userId => user_id}.merge(params))
+        return response['Nitro']['challenges']
+      end
+
+      def get_challenge_progress(params = {})
+        User.get_challenge_progress(@user_id, params)
+      end
+
+      # This API call does not return what the wiki says it does as of this writing:
+      #   http://wiki.bunchball.com/w/page/12748024/user_getGifts
+      # There are others that are also fibbed about on the Wiki.
+      def self.get_gifts(user_ids, params = {})
+        response = post("user.getGifts", {:userIds => user_ids}.merge(params))
+        return response['Nitro']['users']['User']
+      end
+
+      def get_gifts(params = {})
+        response = User.get_gifts(@user_id, session.merge(params))
       end
 
       def self.get_points_balance(user_id, params = {})
@@ -61,16 +98,6 @@ module Bunchball
         response = User.get_points_history(@user_id, params)
       end
 
-      def self.transfer_points(src_user_id, dest_user_id)
-        params[:storeResponse] = params[:storeResponse].to_s if params[:storeResponse]
-        response = post("user.transferPoints", params.merge(:srcUserId => src_user_id, :destUserId => dest_user_id))
-        return response["Nitro"]["res"] == "ok"
-      end
-
-      def transfer_points_to_user(dest_user_id)
-        User.transfer_points(@user_id, dest_user_id)
-      end
-
       def self.get_responses(user_id)
         response = post("user.getResponses", :userId => user_id)
         return response['Nitro']['responses']
@@ -80,19 +107,39 @@ module Bunchball
         User.get_responses(@user_id)
       end
 
-      def self.get_action_history(user_id, params = {})
-        response = post("user.getActionHistory", params.merge(:userId => user_id))
-        # While we figure out what all getActionHistory *might* return, let's just leave a little alert here
-        raise unless response['Nitro']['ActionHistoryRecord'].keys.size < 2
-        # I think this API call may return multiple result arrays, but I'm
-        # not certain. So for now, just return the one.
-        return response['Nitro']['ActionHistoryRecord']['ActionHistoryItem']
+      def log_action(tags, params = {})
+        Actions.log_for_user(@user_id, tags, session.merge(params))
       end
 
-      # For instance method, just add @user_id and pass it up to the class method.
-      def get_action_history(params = {})
-        User.get_action_history(@user_id ,params)
+      # From the Wiki: "This method is identical to user.logAction in all ways
+      # except it can ONLY log actions for tags with low-security enabled."
+      # So we will just pass it to log_action and let the API handle security.
+      # We are, after all, a very thin wrapper.
+      def client_log_action(tags, params = {})
+        log_action(tags, params)
       end
+
+      def self.modify_user_id(old_user_id, new_user_id)
+        response = post("user.modifyUserId", params.merge(:oldUserId => old_user_id, :newUserId => new_user_id))
+        return response["Nitro"]["res"] == "ok"
+      end
+
+      def modify_user_id(new_user_id)
+        User.modify_user_id(@user_id, new_user_id)
+      end
+
+      def self.transfer_points(src_user_id, dest_user_id)
+        params[:storeResponse] = params[:storeResponse].to_s if params[:storeResponse]
+        response = post("user.transferPoints", params.merge(:srcUserId => src_user_id, :destUserId => dest_user_id))
+        return response["Nitro"]["res"] == "ok"
+      end
+
+      def transfer_points(dest_user_id)
+        User.transfer_points(@user_id, dest_user_id)
+      end
+      # This really should be the name of the instance method version of this
+      alias transfer_points_to_user transfer_points
+
     end
   end
 end
