@@ -11,7 +11,7 @@ module Bunchball
       end
 
       def log_action(tags, params = {})
-        Actions.log_for_user(@user_id, tags, params.merge(session))
+        Actions.log_for_user(@user_id, tags, session.merge(params))
       end
 
       def self.exists(user_id, params = {})
@@ -23,6 +23,42 @@ module Bunchball
       def self.modify_user_id(old_user_id, new_user_id)
         response = post("user.modifyUserId", params.merge(:oldUserId => old_user_id, :newUserId => new_user_id))
         return response["Nitro"]["res"] == "ok"
+      end
+
+      def self.credit_points(user_id, points, params = {})
+        response = post("user.creditPoints", {:userId => user_id, :points => points.to_i}.merge(params))
+        return response['Nitro']['User']
+      end
+
+      def credit_points(points, params = {})
+        response = User.credit_points(@user_id, points, params)
+      end
+
+      def self.debit_points(user_id, points, params = {})
+        response = post("user.debitPoints", {:userId => user_id, :points => points.to_i}.merge(params))
+        return response['Nitro']['User']
+      end
+
+      def debit_points(points, params = {})
+        response = User.debit_points(@user_id, points, params)
+      end
+
+      def self.get_points_balance(user_id, params = {})
+        response = post("user.getPointsBalance", {:userId => user_id}.merge(params))
+        return response['Nitro']['Balance']
+      end
+
+      def get_points_balance(params = {})
+        response = User.get_points_balance(@user_id, params)
+      end
+
+      def self.get_points_history(user_id, params = {})
+        response = post("user.getPointsHistory", {:userId => user_id}.merge(params))
+        return response['Nitro']['PointsHistoryRecord']
+      end
+
+      def get_points_history(params = {})
+        response = User.get_points_history(@user_id, params)
       end
 
       def self.transfer_points(src_user_id, dest_user_id)
