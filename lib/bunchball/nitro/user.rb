@@ -10,6 +10,24 @@ module Bunchball
         {:sessionKey => @session_key}
       end
 
+      def self.award_challenge(user_id, challenge, params = {})
+        response = post("user.awardChallenge", session.merge({:userId => user_id, :challenge => challenge}).merge(params))
+        return response['Nitro']['Achievements']
+      end
+
+      def award_challenge(challenge, params = {})
+        User.award_challenge(@user_id, challenge, params)
+      end
+
+      def self.create_competition(comp_name, user_ids, params = {})
+        response = post("user.createCompetition", {:competitionName => comp_name, :userIds => user_id}.merge(params))
+        return response['Nitro']['competitions']
+      end
+
+      def create_competition(params = {})
+        User.create_competition(@user_id, params)
+      end
+
       def self.credit_points(user_id, points, params = {})
         response = post("user.creditPoints", {:userId => user_id, :points => points.to_i}.merge(params))
         return response['Nitro']['User']
@@ -68,6 +86,15 @@ module Bunchball
         User.get_challenge_progress(@user_id, params)
       end
 
+      def self.get_competition_progress(user_id, params = {})
+        response = post("user.getCompetitionProgress", {:userId => user_id}.merge(params))
+        return response['Nitro']['competitions']
+      end
+
+      def get_competition_progress(params = {})
+        User.get_competition_progress(@user_id, params)
+      end
+
       # This API call does not return what the wiki says it does as of this writing:
       #   http://wiki.bunchball.com/w/page/12748024/user_getGifts
       # There are others that are also fibbed about on the Wiki.
@@ -78,6 +105,15 @@ module Bunchball
 
       def get_gifts(params = {})
         response = User.get_gifts(@user_id, session.merge(params))
+      end
+
+      def self.get_next_challenge(user_id, params = {})
+        response = post("user.getNextChallenge", {:userId => user_id}.merge(params))
+        return response['Nitro']['challenges']
+      end
+
+      def get_next_challenge(params = {})
+        User.get_next_challenge(@user_id, params)
       end
 
       def self.get_points_balance(user_id, params = {})
