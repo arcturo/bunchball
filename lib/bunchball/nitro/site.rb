@@ -18,10 +18,38 @@ module Bunchball
         return response['Nitro']['actions']
       end
 
+      def self.get_action_target_leaders(params = {})
+        response = post("site.getActionTargetLeaders", self.session.merge(params))
+        return response['Nitro']['targets']
+      end
+
+      def self.get_challenge_leaders(params = {})
+        response = post("site.getChallengeLeaders", self.session.merge(params))
+        return response['Nitro']['challenges']
+      end
+
       def self.get_points_leaders(params = {})
         response = post("site.getPointsLeaders", self.session.merge(params))
         return response['Nitro']['leaders']
       end
+
+      # TODO: Sample request in API for this call shows a :duration param, but
+      # docs just above it don't include one.
+      def self.get_recent_actions(params = {})
+        response = post("site.getRecentActions", self.session.merge(params))
+        return response['Nitro']['actions']
+      end
+
+      def self.get_recent_challenges(params = {})
+        response = post("site.getRecentChallenges", self.session.merge(params))
+        return response['Nitro']['challenges']
+      end
+
+      def self.get_recent_updates(criteria, params = {})
+        response = post("site.getRecentUpdates", self.session.merge(:criteria => criteria).merge(params))
+        return response['Nitro']['updates']
+      end
+
     end
   end
 end
