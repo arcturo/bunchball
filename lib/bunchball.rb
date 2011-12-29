@@ -13,7 +13,8 @@ module Bunchball
 
   module Nitro
     class <<self
-      attr_accessor :session_key, :format, :api_key
+      attr_accessor :format, :api_key
+      attr_writer :session_key
 
       # Create little accessor methods for each manager class so
       # we can do like Bunchball::Nitro.actions and so on.  Don't
