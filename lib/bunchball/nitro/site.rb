@@ -6,6 +6,11 @@ module Bunchball
         {:sessionKey => Bunchball::Nitro.session_key}
       end
 
+      def site.add_users_to_group(user_ids, group_name, params = {})
+        response = post("site.addUsersToGroup", self.session.merge(:userIds => user_ids, :groupName => group_name).merge(params))
+        return response['Nitro']['groupUsers'] || response['Nitro']['Error']
+      end
+
       # TODO: Figure out why these all just return true instead of the lists of
       # things they should return.
       def self.get_action_feed(api_key = nil, params = {})
@@ -26,6 +31,16 @@ module Bunchball
       def self.get_challenge_leaders(params = {})
         response = post("site.getChallengeLeaders", self.session.merge(params))
         return response['Nitro']['challenges']
+      end
+
+      def self.get_group_action_leaders(tags, params = {})
+        response = post("site.getGroupActionLeaders", self.session.merge({:tags => tags}).merge(params))
+        return response['Nitro']['groupLeaders']
+      end
+
+      def self.get_group_points_leaders(params = {})
+        response = post("site.getGroupPointsLeaders", self.session.merge(params))
+        return response['Nitro']['groupLeaders']
       end
 
       def self.get_points_leaders(params = {})
@@ -50,6 +65,10 @@ module Bunchball
         return response['Nitro']['updates']
       end
 
+      def site.remove_users_from_group(user_ids, group_name, params = {})
+        response = post("site.removeUsersFromGroup", self.session.merge(:userIds => user_ids, :groupName => group_name).merge(params))
+        return response['Nitro']['groupUsers'] || response['Nitro']['Error']
+      end
     end
   end
 end
