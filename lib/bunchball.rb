@@ -30,6 +30,11 @@ module Bunchball
         @session_key ||= authenticate(user_id, api_key)
       end
 
+      def logout
+        @api_key = nil
+        @session_key = nil
+      end
+
       def authenticate(user_id, api_key = nil)
         @api_key ||= api_key
         response = HTTParty.post(endpoint, :body => {:method => "user.login", :userId => user_id, :apiKey => api_key || Bunchball::Nitro.api_key})
