@@ -107,6 +107,15 @@ module Bunchball
         response = User.get_gifts(@user_id, session.merge(params))
       end
 
+      def self.get_groups(user_id, params = {})
+        response = post("user.getGroups", {:userId => user_id}.merge(params))
+        return response['Nitro']['userGroups']
+      end
+
+      def get_groups(params = {})
+        User.get_groups(@user_id, params)
+      end
+
       def self.get_next_challenge(user_id, params = {})
         response = post("user.getNextChallenge", {:userId => user_id}.merge(params))
         return response['Nitro']['challenges']
@@ -141,6 +150,37 @@ module Bunchball
 
       def get_responses
         User.get_responses(@user_id)
+      end
+
+      # Wiki docs don't say on this method either that userId is required,
+      # or what happens if it is left out. Typically, in methods like this,
+      # if the user_id isn't specified, it defaults to the currently
+      # logged-in user, which makes sense, so I'm going to treat it like that.
+      def self.join_group(user_id, group_name, params = {})
+        response = post("user.joinGroup", {:userId => user_id, :groupName => group_name}.merge(params))
+        return response['Nitro']['userGroups']
+      end
+
+      def join_group(group_name, params = {})
+        User.join_group(@user_id, group_name, params)
+      end
+
+      def self.leave_all_groups(user_id, params = {})
+        response = post("user.leaveAllGroups", {:userId => user_id}.merge(params))
+        return response['Nitro']['userGroups']
+      end
+
+      def leave_all_groups(params = {})
+        User.leave_all_groups(@user_id, params)
+      end
+
+      def self.leave_group(user_id, group_name, params = {})
+        response = post("user.leaveGroup", {:userId => user_id, :groupName => group_name}.merge(params))
+        return response['Nitro']['userGroups']
+      end
+
+      def leave_group(group_name, params = {})
+        User.leave_group(@user_id, group_name, params)
       end
 
       def log_action(tags, params = {})
