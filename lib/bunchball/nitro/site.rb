@@ -6,7 +6,7 @@ module Bunchball
         {:sessionKey => Bunchball::Nitro.session_key}
       end
 
-      def site.add_users_to_group(user_ids, group_name, params = {})
+      def self.add_users_to_group(user_ids, group_name, params = {})
         response = post("site.addUsersToGroup", self.session.merge(:userIds => user_ids, :groupName => group_name).merge(params))
         return response['Nitro']['groupUsers'] || response['Nitro']['Error']
       end
@@ -65,7 +65,7 @@ module Bunchball
         return response['Nitro']['updates']
       end
 
-      def site.remove_users_from_group(user_ids, group_name, params = {})
+      def self.remove_users_from_group(user_ids, group_name, params = {})
         response = post("site.removeUsersFromGroup", self.session.merge(:userIds => user_ids, :groupName => group_name).merge(params))
         return response['Nitro']['groupUsers'] || response['Nitro']['Error']
       end
