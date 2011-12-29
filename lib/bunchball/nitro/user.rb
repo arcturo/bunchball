@@ -19,12 +19,12 @@ module Bunchball
         User.award_challenge(@user_id, challenge, params)
       end
 
-      def self.create_competition(comp_name, user_ids, params = {})
+      def self.create_competition(user_ids, comp_name, params = {})
         response = post("user.createCompetition", {:competitionName => comp_name, :userIds => user_id}.merge(params))
         return response['Nitro']['competitions']
       end
 
-      def create_competition(params = {})
+      def create_competition(comp_name, params = {})
         User.create_competition(@user_id, params)
       end
 
