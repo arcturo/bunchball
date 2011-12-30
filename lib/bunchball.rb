@@ -4,6 +4,7 @@ require 'httparty'
 
 require 'bunchball/nitro/api_base'
 require 'bunchball/nitro/actions'
+require 'bunchball/nitro/admin'
 require 'bunchball/nitro/group'
 require 'bunchball/nitro/site'
 require 'bunchball/nitro/user'
