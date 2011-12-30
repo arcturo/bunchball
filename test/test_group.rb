@@ -9,10 +9,6 @@ class TestGroup < Test::Unit::TestCase
     {:sessionKey => '1234'}
   end
 
-  def test_foo
-    true
-  end
-
   def test_get_users
     # Set keys instead of mocking login
     Bunchball::Nitro.session_key = "1234"
