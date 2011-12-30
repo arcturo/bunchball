@@ -4,7 +4,11 @@ module Bunchball
       def self.request_defaults(api_method)
         { :asyncToken => Bunchball::Nitro.async_token, :sessionKey => Bunchball::Nitro.session_key, :method => api_method }
       end
-      
+
+      def self.session
+        {:sessionKey => Bunchball::Nitro.session_key}
+      end
+
       def self.post(api_method, params = {})
         pp "In ApiBase.post('#{api_method}', #{params})"
         @@response = HTTParty.post(Bunchball::Nitro.endpoint, :body => request_defaults(api_method).merge(params))
