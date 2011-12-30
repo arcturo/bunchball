@@ -11,7 +11,7 @@ module Bunchball
       end
 
       def self.award_challenge(user_id, challenge, params = {})
-        response = post("user.awardChallenge", session.merge({:userId => user_id, :challenge => challenge}).merge(params))
+        response = post("user.awardChallenge", {:userId => user_id, :challenge => challenge}.merge(params))
         return response['Nitro']['Achievements']
       end
 
