@@ -195,13 +195,13 @@ module Bunchball
         log_action(tags, params)
       end
 
-      def self.modify_user_id(old_user_id, new_user_id)
+      def self.modify_user_id(old_user_id, new_user_id, params = {})
         response = post("user.modifyUserId", params.merge(:oldUserId => old_user_id, :newUserId => new_user_id))
         return response["Nitro"]["res"] == "ok"
       end
 
-      def modify_user_id(new_user_id)
-        User.modify_user_id(@user_id, new_user_id)
+      def modify_user_id(new_user_id, params = {})
+        User.modify_user_id(@user_id, new_user_id, params)
       end
 
       def self.transfer_points(src_user_id, dest_user_id)
