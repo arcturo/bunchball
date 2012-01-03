@@ -29,6 +29,12 @@ module Bunchball
       def self.hello
         post("hello")
       end
+
+      def self.get_tag_id(tag_name)
+        if (tag = self.all.select{|g| g['name'] == tag_name}.first)
+          return tag['id']
+        end
+      end
     end
   end
 end
