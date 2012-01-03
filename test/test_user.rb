@@ -5,10 +5,15 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro.logout
   end
 
-  def test_initialize
-    Bunchball::Nitro.expects(:authenticate).with("wibble").returns('winning')
+  def setup_user(user_id = 'wibble', return_val = 'a_session_key')
+    Bunchball::Nitro.expects(:authenticate).with(user_id).returns(return_val)
 
-    u = Bunchball::Nitro::User.new('wibble')
+    u = Bunchball::Nitro::User.new(user_id)
+  end
+
+  def test_initialize
+    u = setup_user('wibble', 'winning')
+
     assert_equal u.session[:sessionKey], 'winning' # heh
   end
 
@@ -40,6 +45,15 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, true
   end
 
+  def test_exists_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:exists).with('some_user', u.session).returns('foo')
+
+    response = u.exists('some_user')
+    assert_equal response, 'foo'
+  end
+
   def test_get_points_balance
     params = {:userId => 'wiggly'}
 
@@ -66,9 +80,7 @@ class TestUser < Test::Unit::TestCase
 
   # Test the instance version of the same method
   def test_get_points_balance_instance
-    Bunchball::Nitro.expects(:authenticate).with("wibble").returns('a_session_key')
-
-    u = Bunchball::Nitro::User.new('wibble')
+    u = setup_user
 
     # Mock out the class method with the added params
     Bunchball::Nitro::User.expects(:get_points_balance).with('wibble', :sessionKey => 'a_session_key').returns('foo')
@@ -97,6 +109,17 @@ class TestUser < Test::Unit::TestCase
 
     response = Bunchball::Nitro::User.transfer_points('wiggly', 'puggly')
     assert_equal response, true  # want actual true here, not just a value that evals as true
+  end
+
+  # Test the instance version of the same method
+  def test_transfer_points
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:transfer_points).with(u.user_id, 'puggly', u.session).returns('foo')
+
+    response = u.transfer_points('puggly')
+    assert_equal response, 'foo'
   end
 
 end
