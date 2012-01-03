@@ -28,8 +28,7 @@ module Bunchball
 
       def login(user_id, api_key = nil)
         @api_key ||= api_key
-        @current_user = user_id
-        @session_key ||= authenticate(user_id, api_key)
+        authenticate(user_id, api_key)
       end
 
       def logout
