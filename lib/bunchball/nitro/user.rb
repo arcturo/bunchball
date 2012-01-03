@@ -1,6 +1,8 @@
 module Bunchball
   module Nitro
     class User < ApiBase
+      attr_accessor :session_key, :user_id
+
       def initialize(user_id)
         @user_id = user_id
         @session_key = Bunchball::Nitro.authenticate(user_id)
@@ -50,6 +52,10 @@ module Bunchball
         params[:storeResponse] = params[:storeResponse].to_s if params[:storeResponse]
         response = post("user.exists", {:userId => user_id}.merge(params))
         return response["Nitro"]["Exists"] == "true"
+      end
+
+      def exists(user_id, params = {})
+        User.exists(user_id, session.merge(params))
       end
 
       def self.get_action_history(user_id, params = {})
