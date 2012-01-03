@@ -100,6 +100,17 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, true  # want actual true here, not just a value that evals as true
   end
 
+  # Test the instance version of the same method
+  def test_modify_user_id_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:modify_user_id).with(u.user_id, 'puggly', u.session).returns('foo')
+
+    response = u.modify_user_id('puggly')
+    assert_equal response, 'foo'
+  end
+
   def test_transfer_points
     params = {:srcUserId => 'wiggly', :destUserId => 'puggly'}
 
@@ -112,7 +123,7 @@ class TestUser < Test::Unit::TestCase
   end
 
   # Test the instance version of the same method
-  def test_transfer_points
+  def test_transfer_points_instance
     u = setup_user
 
     # Mock out the class method with the added params
