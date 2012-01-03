@@ -131,7 +131,7 @@ module Bunchball
       end
 
       def get_points_balance(params = {})
-        response = User.get_points_balance(@user_id, params)
+        response = User.get_points_balance(@user_id, session.merge(params))
       end
 
       def self.get_points_history(user_id, params = {})
@@ -162,7 +162,7 @@ module Bunchball
       end
 
       def join_group(group_name, params = {})
-        User.join_group(@user_id, group_name, params)
+        User.join_group(@user_id, group_name, session.merge(params))
       end
 
       def self.leave_all_groups(user_id, params = {})
@@ -171,7 +171,7 @@ module Bunchball
       end
 
       def leave_all_groups(params = {})
-        User.leave_all_groups(@user_id, params)
+        User.leave_all_groups(@user_id, session.merge(params))
       end
 
       def self.leave_group(user_id, group_name, params = {})
@@ -180,7 +180,7 @@ module Bunchball
       end
 
       def leave_group(group_name, params = {})
-        User.leave_group(@user_id, group_name, params)
+        User.leave_group(@user_id, group_name, session.merge(params))
       end
 
       def self.log_action(user_id, tags, params = {})
@@ -207,7 +207,7 @@ module Bunchball
       end
 
       def modify_user_id(new_user_id, params = {})
-        User.modify_user_id(@user_id, new_user_id, params)
+        User.modify_user_id(@user_id, new_user_id, session.merge(params))
       end
 
       def self.transfer_points(src_user_id, dest_user_id, params = {})
@@ -217,7 +217,7 @@ module Bunchball
       end
 
       def transfer_points(dest_user_id, params = {})
-        User.transfer_points(@user_id, dest_user_id, params)
+        User.transfer_points(@user_id, dest_user_id, session.merge(params))
       end
       # This really should be the name of the instance method version of this
       alias transfer_points_to_user transfer_points
