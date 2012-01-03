@@ -112,6 +112,17 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  # We only have an instance version of this method
+  def test_client_log_action_instance
+    u = setup_user
+
+    # Mock out the instance method
+    u.expects(:log_action).with('frog', {}).returns('foo')
+
+    response = u.client_log_action('frog')
+    assert_equal response, 'foo'
+  end
+
   def test_modify_user_id
     params = {:oldUserId => 'wiggly', :newUserId => 'puggly'}
 
