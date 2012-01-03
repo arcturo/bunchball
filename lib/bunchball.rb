@@ -14,7 +14,7 @@ module Bunchball
 
   module Nitro
     class <<self
-      attr_accessor :format, :api_key
+      attr_accessor :format, :api_key, :current_user
       attr_writer :session_key
 
       # Create little accessor methods for each manager class so
@@ -28,24 +28,43 @@ module Bunchball
 
       def login(user_id, api_key = nil)
         @api_key ||= api_key
+        @current_user = user_id
         @session_key ||= authenticate(user_id, api_key)
       end
 
       def logout
         @api_key = nil
+        @current_user = nil
         @session_key = nil
       end
 
       def authenticate(user_id, api_key = nil)
         @api_key ||= api_key
         response = HTTParty.post(endpoint, :body => {:method => "user.login", :userId => user_id, :apiKey => api_key || Bunchball::Nitro.api_key})
-        response['Nitro']['Login']['sessionKey']
+
+        if response['Nitro']['Error']
+          puts "Got an error response from API in authenticate:"
+          pp response.inspect
+          return nil
+        end
+
+        if response['Nitro']['Login']
+          response['Nitro']['Login']['sessionKey']
+        end
       end
 
-      def login_admin(user_name, password, api_key = nil)
+      def login_admin(user_id, password, api_key = nil)
         @api_key ||= api_key
-        unless @session_key
-          response = HTTParty.post(endpoint, :body => {:method => "admin.loginAdmin", :userId => user_name, :password => password, :apiKey => api_key || Bunchball::Nitro.api_key})
+
+        response = HTTParty.post(endpoint, :body => {:method => "admin.loginAdmin", :userId => user_id, :password => password, :apiKey => api_key || Bunchball::Nitro.api_key})
+        if response['Nitro']['Error']
+          puts "Got an error response from API in login_admin:"
+          pp response.inspect
+          return nil
+        end
+
+        if response['Nitro']['Login']['sessionKey']
+          current_user = user_id
           @session_key = response['Nitro']['Login']['sessionKey']
         end
       end

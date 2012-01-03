@@ -8,25 +8,21 @@ module Bunchball
         params[:prefixMatch] = params[:prefixMatch] ? 1 : 0
         params[:lowSecurity] = params[:prefixMatch] ? 1 : 0
 
-        post("admin.createActionTag", params.merge(:name => name))
+        Admin.create_action_tag(name, params)
       end
 
       def self.all
-        post("admin.getActionTags")
+        Admin.get_action_tags
       end
 
       # Log for currently logged in user
-      def self.log(tags, params)
-        params[:storeResponse] = params[:storeResponse].to_s if params[:storeResponse]
-
-        post("user.logAction", params.merge(:tags => tags))        
+      def self.log(tags, params = {})
+        User.log_action(current_user, tags, params)
       end
 
       # Log for any user
       def self.log_for_user(user_id, tags, params = {})
-        params[:storeResponse] = params[:storeResponse].to_s if params[:storeResponse]
-
-        post("user.logAction", params.merge(:tags => tags, :userId => user_id))
+        User.log_action(user_id, tags, params)
       end
 
       # Pings the server

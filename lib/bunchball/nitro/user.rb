@@ -183,8 +183,14 @@ module Bunchball
         User.leave_group(@user_id, group_name, params)
       end
 
+      def self.log_action(user_id, tags, params = {})
+        params[:storeResponse] = params[:storeResponse].to_s if params[:storeResponse]
+
+        post("user.logAction", {:tags => tags, :userId => user_id}.merge(params))
+      end
+
       def log_action(tags, params = {})
-        Actions.log_for_user(@user_id, tags, session.merge(params))
+        User.log_action(@user_id, tags, session.merge(params))
       end
 
       # From the Wiki: "This method is identical to user.logAction in all ways
@@ -196,7 +202,7 @@ module Bunchball
       end
 
       def self.modify_user_id(old_user_id, new_user_id, params = {})
-        response = post("user.modifyUserId", params.merge(:oldUserId => old_user_id, :newUserId => new_user_id))
+        response = post("user.modifyUserId", {:oldUserId => old_user_id, :newUserId => new_user_id}.merge(params))
         return response["Nitro"]["res"] == "ok"
       end
 
@@ -204,14 +210,14 @@ module Bunchball
         User.modify_user_id(@user_id, new_user_id, params)
       end
 
-      def self.transfer_points(src_user_id, dest_user_id)
+      def self.transfer_points(src_user_id, dest_user_id, params = {})
         params[:storeResponse] = params[:storeResponse].to_s if params[:storeResponse]
-        response = post("user.transferPoints", params.merge(:srcUserId => src_user_id, :destUserId => dest_user_id))
+        response = post("user.transferPoints", {:srcUserId => src_user_id, :destUserId => dest_user_id}.merge(params))
         return response["Nitro"]["res"] == "ok"
       end
 
-      def transfer_points(dest_user_id)
-        User.transfer_points(@user_id, dest_user_id)
+      def transfer_points(dest_user_id, params = {})
+        User.transfer_points(@user_id, dest_user_id, params)
       end
       # This really should be the name of the instance method version of this
       alias transfer_points_to_user transfer_points
