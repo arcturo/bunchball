@@ -89,6 +89,29 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_log_action
+    params = {:userId => 'wiggly', :tags => 'frog'}
+
+    return_value = { "Nitro" =>
+      { "res" => "ok", "method" => "user.logAction" }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.logAction", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.log_action('wiggly', 'frog')
+    assert_equal response['Nitro']['res'], 'ok'
+  end
+
+  def test_log_action_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:log_action).with('wibble', 'frog', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.log_action('frog')
+    assert_equal response, 'foo'
+  end
+
   def test_modify_user_id
     params = {:oldUserId => 'wiggly', :newUserId => 'puggly'}
 
