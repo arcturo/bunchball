@@ -43,7 +43,7 @@ module Bunchball
 
         if response['Nitro']['Error']
           puts "Got an error response from API in authenticate:"
-          pp response.inspect
+          p response.inspect
           return nil
         end
 
@@ -58,13 +58,16 @@ module Bunchball
         response = HTTParty.post(endpoint, :body => {:method => "admin.loginAdmin", :userId => user_id, :password => password, :apiKey => api_key || Bunchball::Nitro.api_key})
         if response['Nitro']['Error']
           puts "Got an error response from API in login_admin:"
-          pp response.inspect
+          p response.inspect
           return nil
         end
 
         if response['Nitro']['Login']['sessionKey']
           current_user = user_id
           @session_key = response['Nitro']['Login']['sessionKey']
+        else
+          puts "Unexpected response from API in login_admin:"
+          p response.inspect
         end
       end
 
