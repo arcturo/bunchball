@@ -34,6 +34,15 @@ class TestUser < Test::Unit::TestCase
     assert_equal '80', response['challengesAchieved']['ChallengeAchieved']['points']
   end
 
+  def test_award_challenge_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:award_challenge).with(u.user_id, 'A challenge', u.session).returns('foo')
+
+    response = u.award_challenge('A challenge')
+    assert_equal response, 'foo'
+  end
+
   def test_exists
     params = {:userId => 'wiggly'}
 

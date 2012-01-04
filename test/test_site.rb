@@ -113,7 +113,6 @@ class TestSite < Test::Unit::TestCase
     assert_equal response['Challenge'], 'foo'
   end
 
-
   def test_get_levels
     return_value = {'Nitro' => {'res' => 'ok', 'siteLevels' =>
         {'SiteLevel' => ['foo']}
@@ -124,6 +123,57 @@ class TestSite < Test::Unit::TestCase
 
     response = Bunchball::Nitro::Site.get_levels
     assert_equal response.first, 'foo'
+  end
+
+  def test_get_recent_actions
+    # Set key instead of mocking login
+    Bunchball::Nitro.session_key = "1234"
+
+    params = {:sessionKey => '1234'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'actions' =>
+        {'Action' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::Site.expects(:post).with('site.getRecentActions', params).returns(return_value)
+
+    response = Bunchball::Nitro::Site.get_recent_actions
+    assert_equal response['Action'], 'foo'
+  end
+
+  def test_get_recent_challenges
+    # Set key instead of mocking login
+    Bunchball::Nitro.session_key = "1234"
+
+    params = {:sessionKey => '1234'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'challenges' =>
+        {'Challenge' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::Site.expects(:post).with('site.getRecentChallenges', params).returns(return_value)
+
+    response = Bunchball::Nitro::Site.get_recent_challenges
+    assert_equal response['Challenge'], 'foo'
+  end
+
+  def test_get_recent_updates
+    # Set key instead of mocking login
+    Bunchball::Nitro.session_key = "1234"
+
+    params = {:criteria => 'sum', :sessionKey => '1234'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'updates' =>
+        {'Update' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::Site.expects(:post).with('site.getRecentUpdates', params).returns(return_value)
+
+    response = Bunchball::Nitro::Site.get_recent_updates('sum')
+    assert_equal response['Update'], 'foo'
   end
 
 end

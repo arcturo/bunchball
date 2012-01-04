@@ -18,7 +18,7 @@ module Bunchball
       end
 
       def award_challenge(challenge, params = {})
-        User.award_challenge(@user_id, challenge, params)
+        User.award_challenge(@user_id, challenge, session.merge(params))
       end
 
       def self.create_competition(user_ids, comp_name, params = {})
