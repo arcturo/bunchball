@@ -49,6 +49,9 @@ module Bunchball
 
         if response['Nitro']['Login']
           response['Nitro']['Login']['sessionKey']
+        else
+          puts "Not sure in authenticate:"
+          p response.inspect
         end
       end
 
