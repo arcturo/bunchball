@@ -43,6 +43,11 @@ module Bunchball
         return response['Nitro']['groupLeaders']
       end
 
+      def self.get_levels(params = {})
+        response = post("site.getLevels", params)
+        return response['Nitro']['siteLevels']['SiteLevel']
+      end
+
       def self.get_points_leaders(params = {})
         response = post("site.getPointsLeaders", self.session.merge(params))
         return response['Nitro']['leaders']
