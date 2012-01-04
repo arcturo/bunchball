@@ -96,11 +96,23 @@ class TestSite < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
-  def self.get_catalog_item(item_id, params = {})
-    response = post("site.getCatalogItem", {:itemId => item_id}.merge(params))
-    item = response['Nitro']['CatalogRecord']['catalogItems']['CatalogItem'] rescue nil
-    return item
+  def test_get_challenge_leaders
+    # Set key instead of mocking login
+    Bunchball::Nitro.session_key = "1234"
+
+    params = {:sessionKey => '1234'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'challenges' =>
+        {'Challenge' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::Site.expects(:post).with('site.getChallengeLeaders', params).returns(return_value)
+
+    response = Bunchball::Nitro::Site.get_challenge_leaders
+    assert_equal response['Challenge'], 'foo'
   end
+
 
   def test_get_levels
     return_value = {'Nitro' => {'res' => 'ok', 'siteLevels' =>
