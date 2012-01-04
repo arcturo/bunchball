@@ -54,6 +54,54 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_get_action_history
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'ActionHistoryRecord' =>
+        {'ActionHistoryItem' => {'value' => 'foo' }}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getActionHistory", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_action_history('wiggly')
+    assert_equal response['value'], 'foo'
+  end
+
+  def test_get_action_history_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_action_history).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_action_history
+    assert_equal response, 'foo'
+  end
+
+  def test_get_action_target_value
+    params = {:userId => 'wiggly', :tag => 'a_tag', :target => 'a_target'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'targetValue' =>
+        {'value' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getActionTargetValue", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_action_target_value('wiggly', 'a_tag', 'a_target')
+    assert_equal response['value'], 'foo'
+  end
+
+  def test_get_action_target_value_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_action_target_value).with('wibble', 'a_tag', 'a_target', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_action_target_value('a_tag', 'a_target')
+    assert_equal response, 'foo'
+  end
+
   def test_get_challenge_progress
     params = {:userId => 'wiggly'}
 

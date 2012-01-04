@@ -60,27 +60,29 @@ module Bunchball
 
       def self.get_action_history(user_id, params = {})
         response = post("user.getActionHistory", {:userId => user_id}.merge(params))
+
         # While we figure out what all getActionHistory *might* return, let's just leave a little alert here
-        raise unless response['Nitro']['ActionHistoryRecord'].keys.size < 2
-        # I think this API call may return multiple result arrays, but I'm
-        # not certain. So for now, just return the one.
+        raise if response['Nitro']['ActionHistoryRecord'].keys.size > 1
+
+        # I think this API call may return multiple ActionHistoryItem arrays,
+        # but I'm not certain. So for now, just return the one.
         return response['Nitro']['ActionHistoryRecord']['ActionHistoryItem']
       end
 
       # For instance method, just add @user_id and pass it up to the class method.
       def get_action_history(params = {})
-        User.get_action_history(@user_id ,params)
+        User.get_action_history(@user_id, session.merge(params))
       end
 
-      def self.get_action_target_value(user_id, tag, target)
+      def self.get_action_target_value(user_id, tag, target, params = {})
         # Let post add the required sessionKey
         response = post("user.getActionTargetValue", {:userId => user_id, :tag => tag, :target => target})
         return response['Nitro']['targetValue']
       end
 
       # For instance method, just add @user_id and pass it up to the class method.
-      def get_action_target_value(tag, target)
-        User.get_action_target_value(@user_id, tag, target)
+      def get_action_target_value(tag, target, params = {})
+        User.get_action_target_value(@user_id, tag, target, session.merge(params))
       end
 
       def self.get_challenge_progress(user_id, params = {})
