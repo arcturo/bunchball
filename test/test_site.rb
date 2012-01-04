@@ -9,6 +9,57 @@ class TestSite < Test::Unit::TestCase
     {:sessionKey => '1234'}
   end
 
+  def test_get_action_feed
+    # Set key instead of mocking login
+    Bunchball::Nitro.api_key = "1234"
+
+    params = {:apiKey => Bunchball::Nitro.api_key}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'items' =>
+        {'item' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::Site.expects(:post).with('site.getActionFeed', params).returns(return_value)
+
+    response = Bunchball::Nitro::Site.get_action_feed
+    assert_equal response['item'], 'foo'
+  end
+
+  def test_get_action_leaders
+    # Set key instead of mocking login
+    Bunchball::Nitro.session_key = "1234"
+
+    params = {:criteria => 'sum', :tags => 'a_tag', :sessionKey => '1234'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'actions' =>
+        {'Action' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::Site.expects(:post).with('site.getActionLeaders', params).returns(return_value)
+
+    response = Bunchball::Nitro::Site.get_action_leaders('sum', 'a_tag')
+    assert_equal response['Action'], 'foo'
+  end
+
+  def test_get_action_target_leaders
+    # Set key instead of mocking login
+    Bunchball::Nitro.session_key = "1234"
+
+    params = {:criteria => 'sum', :tag => 'a_tag', :sessionKey => '1234'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'targets' =>
+        {'Target' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::Site.expects(:post).with('site.getActionTargetLeaders', params).returns(return_value)
+
+    response = Bunchball::Nitro::Site.get_action_target_leaders('sum', 'a_tag')
+    assert_equal response['Target'], 'foo'
+  end
+
   def test_get_catalog
     # The way this API method returns data (and HTTParty parses it),
     # the 'CatalogRecord' can return a hash or an array of hashes.

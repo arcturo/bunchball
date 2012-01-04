@@ -11,20 +11,21 @@ module Bunchball
         return response['Nitro']['groupUsers'] || response['Nitro']['Error']
       end
 
-      # TODO: Figure out why these all just return true instead of the lists of
-      # things they should return.
-      def self.get_action_feed(api_key = nil, params = {})
-        response = post("site.getActionFeed", params.merge(:apiKey => api_key || Bunchball::Nitro.api_key))
-        return response['Nitro']['items']
+      # API Returns either true (if there are no actions to report but request was valid),
+      # or a hash with 'items' as its only key. However, that key's value may be a single hash,
+      # or an array of hashes, depending on whether there are one or multiple actions to report.
+      def self.get_action_feed(params = {})
+        response = post("site.getActionFeed", {:apiKey => Bunchball::Nitro.api_key}.merge(params))
+        return response['Nitro']['items'] || response['Nitro']['Error']
       end
 
-      def self.get_action_leaders(params = {})
-        response = post("site.getActionLeaders", self.session.merge(params))
+      def self.get_action_leaders(criteria, tags, params = {})
+        response = post("site.getActionLeaders", self.session.merge(:criteria => criteria, :tags => tags).merge(params))
         return response['Nitro']['actions']
       end
 
-      def self.get_action_target_leaders(params = {})
-        response = post("site.getActionTargetLeaders", self.session.merge(params))
+      def self.get_action_target_leaders(criteria, tag, params = {})
+        response = post("site.getActionTargetLeaders", self.session.merge(:criteria => criteria, :tag => tag).merge(params))
         return response['Nitro']['targets']
       end
 

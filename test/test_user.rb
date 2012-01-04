@@ -18,7 +18,7 @@ class TestUser < Test::Unit::TestCase
   end
 
   def test_award_challenge
-    # Set keys instead of mocking login
+    # Set key instead of mocking login
     Bunchball::Nitro.session_key = "1234"
 
     params = {:userId => 'wiggly', :challenge => 'A challenge'}
