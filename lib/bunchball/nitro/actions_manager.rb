@@ -61,7 +61,6 @@ class Bunchball::Nitro::ActionsManager
     a = ActionRunner.new("#{[@prefixes, name].flatten.join(prefix_separator)}")
     a.instance_eval(&blk)
 
-    puts a.inspect
     if (tag_id = Bunchball::Nitro::Actions.get_tag_id(a.name))
       Bunchball::Nitro::Actions.update(tag_id, a.attributes)
     else
