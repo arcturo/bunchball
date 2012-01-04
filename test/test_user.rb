@@ -54,6 +54,30 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_get_challenge_progress
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'challenges' =>
+        {'Challenge' => {'completionCount' => '1', 'rules' => 'foo' }}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getChallengeProgress", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_challenge_progress('wiggly')
+    assert_equal response['Challenge']['rules'], 'foo'
+  end
+
+  def test_get_challenge_progress_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_challenge_progress).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_challenge_progress
+    assert_equal response, 'foo'
+  end
+
   def test_get_points_balance
     params = {:userId => 'wiggly'}
 
@@ -86,6 +110,30 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:get_points_balance).with('wibble', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.get_points_balance
+    assert_equal response, 'foo'
+  end
+
+  def test_get_responses
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'responses' =>
+        {'Nitro' => {'Achievements' => 'foo' }}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getResponses", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_responses('wiggly')
+    assert_equal response['Nitro']['Achievements'], 'foo'
+  end
+
+  def test_get_responses_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_responses).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_responses
     assert_equal response, 'foo'
   end
 

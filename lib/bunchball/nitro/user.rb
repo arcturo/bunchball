@@ -89,7 +89,7 @@ module Bunchball
       end
 
       def get_challenge_progress(params = {})
-        User.get_challenge_progress(@user_id, params)
+        User.get_challenge_progress(@user_id, session.merge(params))
       end
 
       def self.get_competition_progress(user_id, params = {})
@@ -149,13 +149,13 @@ module Bunchball
         response = User.get_points_history(@user_id, params)
       end
 
-      def self.get_responses(user_id)
-        response = post("user.getResponses", :userId => user_id)
+      def self.get_responses(user_id, params = {})
+        response = post("user.getResponses", {:userId => user_id}.merge(params))
         return response['Nitro']['responses']
       end
 
-      def get_responses
-        User.get_responses(@user_id)
+      def get_responses(params = {})
+        User.get_responses(@user_id, session.merge(params))
       end
 
       # Wiki docs don't say on this method either that userId is required,

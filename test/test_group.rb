@@ -9,11 +9,22 @@ class TestGroup < Test::Unit::TestCase
     {:sessionKey => '1234'}
   end
 
-  def test_get_users
-    # Set keys instead of mocking login
-    Bunchball::Nitro.session_key = "1234"
+  def test_get_challenge_progress
+    params = {:groupName => 'froggy'}
 
-    params = Bunchball::Nitro::Group.session.merge({:groupName => "froggy"})
+    return_value = {'Nitro' => {'res' => 'ok', 'challenges' =>
+        {'Challenge' => {'completionCount' => '1', 'rules' => 'foo' }}
+      }
+    }
+
+    Bunchball::Nitro::Group.expects(:post).with("group.getChallengeProgress", params).returns(return_value)
+
+    response = Bunchball::Nitro::Group.get_challenge_progress('froggy')
+    assert_equal response['Challenge']['rules'], 'foo'
+  end
+
+  def test_get_users
+    params = {:groupName => 'froggy'}
 
     return_value = {'Nitro' => {'users' => { 'User' => [ 
       { "UserPreferences" => true, "userId" => "willy@wonka.net" },
