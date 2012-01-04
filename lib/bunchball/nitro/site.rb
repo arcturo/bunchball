@@ -28,6 +28,17 @@ module Bunchball
         return response['Nitro']['targets']
       end
 
+      def self.get_catalog(params = {})
+        response = post("site.getCatalog", params)
+        return response['Nitro']['CatalogRecord']
+      end
+
+      def self.get_catalog_item(item_id, params = {})
+        response = post("site.getCatalogItem", {:itemId => item_id}.merge(params))
+        item = response['Nitro']['CatalogRecord']['catalogItems']['CatalogItem'] rescue nil
+        return item
+      end
+
       def self.get_challenge_leaders(params = {})
         response = post("site.getChallengeLeaders", self.session.merge(params))
         return response['Nitro']['challenges']
