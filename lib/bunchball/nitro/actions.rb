@@ -11,6 +11,14 @@ module Bunchball
         Admin.create_action_tag(name, params)
       end
 
+      def self.update(name, params = {})
+        params[:category] = Actions::CATEGORIES.index(params[:category]) if params[:category]
+        params[:prefixMatch] = params[:prefixMatch] ? 1 : 0
+        params[:lowSecurity] = params[:prefixMatch] ? 1 : 0
+
+        Admin.update_action_tag(name, params)
+      end
+
       def self.all
         Admin.get_action_tags
       end
