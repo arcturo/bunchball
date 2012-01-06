@@ -43,6 +43,32 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_create_competition
+    # Set key instead of mocking login
+    Bunchball::Nitro.session_key = "1234"
+
+    params = {:competitionName => 'A competition', :userIds => 'user1,user2'}
+
+    return_value = {'Nitro' => {'competitions' =>
+        {'Competition' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.createCompetition", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.create_competition('user1,user2', 'A competition')
+    assert_equal response['Competition'], 'foo'
+  end
+
+  def test_create_competition_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:create_competition).with(u.user_id, 'A competition', u.session).returns('foo')
+
+    response = u.create_competition('A competition')
+    assert_equal response, 'foo'
+  end
+
   def test_credit_points
     params = {:userId => 'wiggly', :points => 30}
 
@@ -176,6 +202,30 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:get_challenge_progress).with('wibble', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.get_challenge_progress
+    assert_equal response, 'foo'
+  end
+
+  def test_get_competition_progress
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'competitions' =>
+        {'Competition' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getCompetitionProgress", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_competition_progress('wiggly')
+    assert_equal response['Competition'], 'foo'
+  end
+
+  def test_get_competition_progress_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_competition_progress).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_competition_progress
     assert_equal response, 'foo'
   end
 
