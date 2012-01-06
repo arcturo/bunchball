@@ -170,6 +170,34 @@ module Bunchball
         response = User.get_points_history(@user_id, session.merge(params))
       end
 
+      def self.get_pending_notifications(user_id, params = {})
+        response = post("user.getPendingNotifications", {:userId => user_id}.merge(params))
+        # Two top-level keys here need returning, so we'll just return the whole thing.
+        return response['Nitro']
+      end
+
+      def get_pending_notifications(params = {})
+        response = User.get_pending_notifications(@user_id, session.merge(params))
+      end
+
+      def self.get_preference(user_id, name, params = {})
+        response = post("user.getPreference", {:userId => user_id, :name => name}.merge(params))
+        return response['Nitro']['userPreferences']
+      end
+
+      def get_preference(name, params = {})
+        response = User.get_preference(@user_id, name, session.merge(params))
+      end
+
+      def self.get_preferences(user_id, names, params = {})
+        response = post("user.getPreferences", {:userId => user_id, :names => names}.merge(params))
+        return response['Nitro']['userPreferences']
+      end
+
+      def get_preferences(names, params = {})
+        response = User.get_preferences(@user_id, names, session.merge(params))
+      end
+
       def self.get_responses(user_id, params = {})
         response = post("user.getResponses", {:userId => user_id}.merge(params))
         return response['Nitro']['responses']
@@ -237,6 +265,15 @@ module Bunchball
         User.modify_user_id(@user_id, new_user_id, session.merge(params))
       end
 
+      def self.remove_preference(user_id, name, params = {})
+        response = post("user.removePreference", {:userId => user_id, :name => name}.merge(params))
+        return response['Nitro']['userPreferences']
+      end
+
+      def remove_preference(name, params = {})
+        response = User.remove_preference(@user_id, name, session.merge(params))
+      end
+
       def self.reset_level(user_id, params = {})
         response = post("user.resetLevel", {:userId => user_id}.merge(params))
         return response['Nitro']['users']
@@ -249,6 +286,41 @@ module Bunchball
       def self.set_level(user_id, level_name, params = {})
         response = post("user.setLevel", {:userId => user_id, :levelName => level_name}.merge(params))
         return response['Nitro']['users']
+      end
+
+      def set_level(level_name, params = {})
+        response = User.set_level(@user_id, level_name, session.merge(params))
+      end
+
+      def self.set_preference(user_id, name, params = {})
+        response = post("user.setPreference", {:userId => user_id, :name => name}.merge(params))
+        return response['Nitro']['userPreferences']
+      end
+
+      def set_preference(name, params = {})
+        response = User.set_preference(@user_id, name, session.merge(params))
+      end
+
+      def self.set_preferences(user_id, names, params = {})
+        response = post("user.setPreferences", {:userId => user_id, :names => names}.merge(params))
+        return response['Nitro']['userPreferences']
+      end
+
+      def set_preferences(names, params = {})
+        response = User.set_preferences(@user_id, names, session.merge(params))
+      end
+
+      def self.store_notifications(user_ids, notification_names, params = {})
+        response = post("user.storeNotifications", {:userIds => user_ids, :notificationNames => notification_names}.merge(params))
+        if (response['Nitro']['res'] == 'ok')
+          return true
+        else
+          return response['Nitro']['Error']
+        end
+      end
+
+      def store_notifications(notification_names, params = {})
+        response = User.store_notifications(@user_id, notification_names, session.merge(params))
       end
 
       def set_level(level_name, params = {})

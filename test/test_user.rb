@@ -325,6 +325,27 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_get_pending_notifications
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => 'foo' }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getPendingNotifications", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_pending_notifications('wiggly')
+    assert_equal response, 'foo'
+  end
+
+  def test_get_pending_notifications_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_pending_notifications).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_pending_notifications
+    assert_equal response, 'foo'
+  end
+
   def test_get_points_balance
     params = {:userId => 'wiggly'}
 
@@ -381,6 +402,54 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:get_points_history).with('wibble', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.get_points_history
+    assert_equal response, 'foo'
+  end
+
+  def test_get_preference
+    params = {:userId => 'wiggly', :name => 'preference_name'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'userPreferences' =>
+        {'UserPreference' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getPreference", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_preference('wiggly', 'preference_name')
+    assert_equal response['UserPreference'], 'foo'
+  end
+
+  def test_get_preference_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_preference).with('wibble', 'preference_name', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_preference('preference_name')
+    assert_equal response, 'foo'
+  end
+
+  def test_get_preferences
+    params = {:userId => 'wiggly', :names => 'preference1|preference2'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'userPreferences' =>
+        {'UserPreference' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getPreferences", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_preferences('wiggly', 'preference1|preference2')
+    assert_equal response['UserPreference'], 'foo'
+  end
+
+  def test_get_preferences_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_preferences).with('wibble', 'preference1|preference2', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_preferences('preference1|preference2')
     assert_equal response, 'foo'
   end
 
@@ -533,6 +602,30 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_remove_preference
+    params = {:userId => 'wiggly', :name => 'preference_name'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'userPreferences' =>
+        {'UserPreference' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.removePreference", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.remove_preference('wiggly', 'preference_name')
+    assert_equal response['UserPreference'], 'foo'
+  end
+
+  def test_remove_preference_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:remove_preference).with('wibble', 'preference_name', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.remove_preference('preference_name')
+    assert_equal response, 'foo'
+  end
+
   def test_reset_level
     params = {:userId => 'wiggly'}
 
@@ -578,6 +671,75 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:set_level).with('wibble', 'level_name', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.set_level('level_name')
+    assert_equal response, 'foo'
+  end
+
+  def test_set_preference
+    params = {:userId => 'wiggly', :name => 'preference_name'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'userPreferences' =>
+        {'UserPreference' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.setPreference", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.set_preference('wiggly', 'preference_name')
+    assert_equal response['UserPreference'], 'foo'
+  end
+
+  def test_set_preference_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:set_preference).with('wibble', 'preference_name', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.set_preference('preference_name')
+    assert_equal response, 'foo'
+  end
+
+  def test_set_preferences
+    params = {:userId => 'wiggly', :names => 'preference1|preference2'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'userPreferences' =>
+        {'UserPreference' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.setPreferences", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.set_preferences('wiggly', 'preference1|preference2')
+    assert_equal response['UserPreference'], 'foo'
+  end
+
+  def test_set_preferences_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:set_preferences).with('wibble', 'preference1|preference2', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.set_preferences('preference1|preference2')
+    assert_equal response, 'foo'
+  end
+
+  def test_store_notifications
+    params = {:userIds => 'wiggly,piggly', :notificationNames => 'notify1,notify2'}
+
+    return_value = {'Nitro' => {'res' => 'ok'} }
+
+    Bunchball::Nitro::User.expects(:post).with("user.storeNotifications", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.store_notifications('wiggly,piggly', 'notify1,notify2')
+    assert_equal response, true  # want actual true here, not just a value that evals as true
+  end
+
+  def test_store_notifications_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:store_notifications).with('wibble', 'notify1', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.store_notifications('notify1')
     assert_equal response, 'foo'
   end
 
