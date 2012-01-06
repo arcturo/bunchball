@@ -7,6 +7,7 @@ require 'bunchball/nitro/actions'
 require 'bunchball/nitro/actions_manager'
 require 'bunchball/nitro/admin'
 require 'bunchball/nitro/group'
+require 'bunchball/nitro/response'
 require 'bunchball/nitro/site'
 require 'bunchball/nitro/user'
 
