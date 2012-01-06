@@ -22,12 +22,13 @@ module Bunchball
       end
 
       def self.create_competition(user_ids, comp_name, params = {})
-        response = post("user.createCompetition", {:competitionName => comp_name, :userIds => user_id}.merge(params))
+        response = post("user.createCompetition", {:competitionName => comp_name, :userIds => user_ids}.merge(params))
         return response['Nitro']['competitions']
       end
 
+      # Note sure how useful an instance version of this one will be, but still...
       def create_competition(comp_name, params = {})
-        User.create_competition(@user_id, params)
+        User.create_competition(@user_id, comp_name, session.merge(params))
       end
 
       def self.credit_points(user_id, points, params = {})
@@ -100,7 +101,7 @@ module Bunchball
       end
 
       def get_competition_progress(params = {})
-        User.get_competition_progress(@user_id, params)
+        User.get_competition_progress(@user_id, session.merge(params))
       end
 
       # This API call does not return what the wiki says it does as of this writing:
