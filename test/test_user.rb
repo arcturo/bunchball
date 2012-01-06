@@ -43,6 +43,29 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_create_avatar
+    params = {:userId => 'a_user', :catalogName => 'a catalog', :instanceName => 'an instance'}
+
+    return_value = {'Nitro' => {'AvatarRecord' =>
+        {'items' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with('user.createAvatar', params).returns(return_value)
+
+    response = Bunchball::Nitro::User.create_avatar('a_user', 'a catalog', 'an instance')
+    assert_equal response['items'], 'foo'
+  end
+
+  def test_create_avatar_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:create_avatar).with(u.user_id, 'a catalog', 'an instance', u.session).returns('foo')
+
+    response = u.create_avatar('a catalog', 'an instance')
+    assert_equal response, 'foo'
+  end
+
   def test_create_competition
     # Set key instead of mocking login
     Bunchball::Nitro.session_key = "1234"
@@ -178,6 +201,52 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:get_action_target_value).with('wibble', 'a_tag', 'a_target', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.get_action_target_value('a_tag', 'a_target')
+    assert_equal response, 'foo'
+  end
+
+  def test_get_avatar_items
+    params = {:userId => 'a_user', :instanceName => 'an instance'}
+
+    return_value = {'Nitro' => {'AvatarRecord' =>
+        {'items' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with('user.getAvatarItems', params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_avatar_items('a_user', 'an instance')
+    assert_equal response['items'], 'foo'
+  end
+
+  def test_get_avatar_items_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:get_avatar_items).with(u.user_id, 'an instance', u.session).returns('foo')
+
+    response = u.get_avatar_items('an instance')
+    assert_equal response, 'foo'
+  end
+
+  def test_get_avatars
+    params = {:userId => 'a_user'}
+
+    return_value = {'Nitro' => {'UserCatalogInstance' =>
+        {'name' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with('user.getAvatars', params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_avatars('a_user')
+    assert_equal response['name'], 'foo'
+  end
+
+  def test_get_avatars_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:get_avatars).with(u.user_id, u.session).returns('foo')
+
+    response = u.get_avatars
     assert_equal response, 'foo'
   end
 
@@ -322,6 +391,33 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:get_next_level).with('wibble', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.get_next_level
+    assert_equal response, 'foo'
+  end
+
+  def test_owned_items
+    # This one requires one of a pair of item id specifiers be present in params,
+    # so we don't use a positional paramater for it. Just pick one for the test.
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'OwnedItemsRecord' =>
+        {'ownedItems' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getOwnedItems", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_owned_items('wiggly')
+    assert_equal response['ownedItems'], 'foo'
+  end
+
+  # Test the instance version of the same method
+  def test_owned_items_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_owned_items).with(u.user_id, u.session).returns('foo')
+
+    response = u.get_owned_items
     assert_equal response, 'foo'
   end
 
@@ -477,6 +573,28 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_gift_item
+    params = {:userId => 'wiggly', :recipientId => 'piggly', :itemId => 'an_item'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'Balance' => 'foo' } }
+
+    Bunchball::Nitro::User.expects(:post).with("user.giftItem", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.gift_item('wiggly', 'piggly', 'an_item')
+    assert_equal response['Balance'], 'foo'
+  end
+
+  # Test the instance version of the same method
+  def test_gift_item_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:gift_item).with(u.user_id, 'piggly', 'an_item', u.session).returns('foo')
+
+    response = u.gift_item('piggly', 'an_item')
+    assert_equal response, 'foo'
+  end
+
   def test_join_group
     params = {:userId => 'wiggly', :groupName => 'a_group'}
 
@@ -602,6 +720,74 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_place_avatar_item
+    params = {:userId => 'a_user', :itemId => 'an item'}
+
+    return_value = {'Nitro' => {'AvatarRecord' =>
+        {'items' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with('user.placeAvatarItem', params).returns(return_value)
+
+    response = Bunchball::Nitro::User.place_avatar_item('a_user', 'an item')
+    assert_equal response['items'], 'foo'
+  end
+
+  def test_place_avatar_item_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:place_avatar_item).with(u.user_id, 'an item', u.session).returns('foo')
+
+    response = u.place_avatar_item('an item')
+    assert_equal response, 'foo'
+  end
+
+  def test_purchase_item
+    params = {:userId => 'wiggly', :itemId => 'an_item'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'Balance' => 'foo' } }
+
+    Bunchball::Nitro::User.expects(:post).with("user.purchaseItem", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.purchase_item('wiggly', 'an_item')
+    assert_equal response['Balance'], 'foo'
+  end
+
+  # Test the instance version of the same method
+  def test_purchase_item_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:purchase_item).with(u.user_id, 'an_item', u.session).returns('foo')
+
+    response = u.purchase_item('an_item')
+    assert_equal response, 'foo'
+  end
+
+  def test_remove_avatar_item
+    params = {:userId => 'a_user', :itemId => 'an item'}
+
+    return_value = {'Nitro' => {'AvatarRecord' =>
+        {'items' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with('user.removeAvatarItem', params).returns(return_value)
+
+    response = Bunchball::Nitro::User.remove_avatar_item('a_user', 'an item')
+    assert_equal response['items'], 'foo'
+  end
+
+  def test_remove_avatar_item_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:remove_avatar_item).with(u.user_id, 'an item', u.session).returns('foo')
+
+    response = u.remove_avatar_item('an item')
+    assert_equal response, 'foo'
+  end
+
   def test_remove_preference
     params = {:userId => 'wiggly', :name => 'preference_name'}
 
@@ -647,6 +833,53 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:reset_level).with('wibble', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.reset_level
+    assert_equal response, 'foo'
+  end
+
+  def test_sellback_item
+    # This one requires one of a pair of item id specifiers be present in params,
+    # so we don't use a positional paramater for it. Just pick one for the test.
+    params = {:userId => 'wiggly', :ownedItemId => 'owned_item'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'OwnedItemsRecord' => 'foo' } }
+
+    Bunchball::Nitro::User.expects(:post).with("user.sellbackItem", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.sellback_item('wiggly', :ownedItemId => 'owned_item')
+    assert_equal response['OwnedItemsRecord'], 'foo'
+  end
+
+  # Test the instance version of the same method
+  def test_sellback_item_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:sellback_item).with(u.user_id, {:itemId => 'an_item'}.merge(u.session)).returns('foo')
+
+    response = u.sellback_item(:itemId => 'an_item')
+    assert_equal response, 'foo'
+  end
+
+  def test_set_avatar_color
+    params = {:userId => 'a_user', :instanceName => 'an instance', :skinColor => '33ffcc'}
+
+    return_value = {'Nitro' => {'AvatarRecord' =>
+        {'items' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with('user.setAvatarColor', params).returns(return_value)
+
+    response = Bunchball::Nitro::User.set_avatar_color('a_user', 'an instance', '33ffcc')
+    assert_equal response['items'], 'foo'
+  end
+
+  def test_set_avatar_color_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:set_avatar_color).with(u.user_id, 'an instance', '33ffaa', u.session).returns('foo')
+
+    response = u.set_avatar_color('an instance', '33ffaa')
     assert_equal response, 'foo'
   end
 

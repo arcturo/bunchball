@@ -21,6 +21,54 @@ module Bunchball
         User.award_challenge(@user_id, challenge, session.merge(params))
       end
 
+      # Return values not documented in Wiki for this method, so here
+      # they are for now:
+
+      # {'Nitro' =>
+      # { "res" => "ok",
+      #   "AvatarRecord" => {
+      #     "items" => {
+      #       "CatalogItem" => [
+      #         { "passExtraData" => "0", "price"=>"0", "countRemaining"=>"-1", "name"=>"DO NOT REMOVE",
+      #           "zOrder"=>"80", "createTime"=>"1318020864", "category"=>"TofooHead", "ownedCount"=>"0",
+      #           "background"=>"0", "designer"=>"", "categoryIds"=>"2806768",
+      #           "fullUrl"=>"http://assets.bunchball.com/catalog/TofooHead.swf", "orders"=>"", "tags"=>"",
+      #           "id"=>"30019446", "color1"=>"", "customData"=>"", "lastUpdated"=>"1241111552", "doCallback"=>"0",
+      #           "thumbUrl"=>"http://assets.bunchball.com/catalog/TofooHead.swf", "canUnselect"=>"false",
+      #           "color2"=>"", "catalogName"=>"DEFAULT_AVATAR", "maxOwnedCountPerUser"=>"-1", "description"=>"",
+      #           "realItem"=>"0", "catalogItemId"=>"30019446", "pointCategoryId"=>"283426"
+      #         },
+      #         { "passExtraData"=>"0", "price"=>"0", "countRemaining"=>"-1", "name"=>"DO NOT REMOVE",
+      #           "zOrder"=>"40", "createTime"=>"1318020864", "category"=>"TofooBody", "ownedCount"=>"0",
+      #           "background"=>"0", "designer"=>"", "categoryIds"=>"2806770",
+      #           "fullUrl"=>"http://assets.bunchball.com/catalog/TofooBody.swf", "orders"=>"", "tags"=>"",
+      #           "id"=>"30019448", "color1"=>"", "customData"=>"", "lastUpdated"=>"1241111552", "doCallback"=>"0",
+      #           "thumbUrl"=>"http://assets.bunchball.com/catalog/TofooBody.swf", "canUnselect"=>"false",
+      #           "color2"=>"", "catalogName"=>"DEFAULT_AVATAR", "maxOwnedCountPerUser"=>"-1", "description"=>"",
+      #           "realItem"=>"0", "catalogItemId"=>"30019448", "pointCategoryId"=>"283426"
+      #         }
+      #       ]
+      #     },
+      #     "recordId" => "AvatarModule.willy@wonka.net",
+      #     "instanceName"=>"foo",
+      #     "type"=>"AvatarModule",
+      #     "skinColor"=>""
+      #   },
+      #   "method"=>"user.createAvatar",
+      #   "server"=>"sb00.prod.bunchball.net/nitro4.2.0",
+      #   "asyncToken"=>"9-255-253-259-255-253-259-255-253"
+      # }
+      # }
+
+      def self.create_avatar(user_id, catalog, instance, params = {})
+        response = post("user.createAvatar", {:userId => user_id, :catalogName => catalog, :instanceName => instance}.merge(params))
+        return response['Nitro']['AvatarRecord'] || response['Nitro']['Error']
+      end
+
+      def create_avatar(catalog, instance, params = {})
+        User.create_avatar(@user_id, catalog, instance, session.merge(params))
+      end
+
       def self.create_competition(user_ids, comp_name, params = {})
         response = post("user.createCompetition", {:competitionName => comp_name, :userIds => user_ids}.merge(params))
         return response['Nitro']['competitions']
@@ -84,6 +132,27 @@ module Bunchball
       # For instance method, just add @user_id and pass it up to the class method.
       def get_action_target_value(tag, target, params = {})
         User.get_action_target_value(@user_id, tag, target, session.merge(params))
+      end
+
+      def self.get_avatar_items(user_id, instance_name, params = {})
+        response = post("user.getAvatarItems", {:userId => user_id, :instanceName => instance_name}.merge(params))
+        return response['Nitro']['AvatarRecord'] || response['Nitro']['Error']
+      end
+
+      def get_avatar_items(instance_name, params = {})
+        User.get_avatar_items(@user_id, instance_name, session.merge(params))
+      end
+
+      def self.get_avatars(user_id, params = {})
+        response = post("user.getAvatars", {:userId => user_id}.merge(params))
+        # valid but no avatars: @parsed_response={"Nitro"=>{"res"=>"ok", "method"=>"user.getAvatars",
+        # valid with avatars: @parsed_response={"Nitro"=>{"res"=>"ok", "UserCatalogInstance"=>{"name"=>"foo"}, "method"...
+        # invalid (presumably): @parsed_response={"Nitro"=>{"res"=>"err", "something..."}}
+        return response['Nitro']['UserCatalogInstance'] || response['Nitro']['Error']
+      end
+
+      def get_avatars(params = {})
+        User.get_avatars(@user_id, session.merge(params))
       end
 
       def self.get_challenge_progress(user_id, params = {})
@@ -152,6 +221,25 @@ module Bunchball
         User.get_next_challenge(@user_id, session.merge(params))
       end
 
+      def self.get_owned_items(user_id, params = {})
+        response = post("user.getOwnedItems", {:userId => user_id}.merge(params))
+        return response['Nitro']['OwnedItemsRecord']
+      end
+
+      def get_owned_items(params = {})
+        response = User.get_owned_items(@user_id, session.merge(params))
+      end
+
+      def self.get_pending_notifications(user_id, params = {})
+        response = post("user.getPendingNotifications", {:userId => user_id}.merge(params))
+        # Two top-level keys here need returning, so we'll just return the whole thing.
+        return response['Nitro']
+      end
+
+      def get_pending_notifications(params = {})
+        response = User.get_pending_notifications(@user_id, session.merge(params))
+      end
+
       def self.get_points_balance(user_id, params = {})
         response = post("user.getPointsBalance", {:userId => user_id}.merge(params))
         return response['Nitro']['Balance']
@@ -168,16 +256,6 @@ module Bunchball
 
       def get_points_history(params = {})
         response = User.get_points_history(@user_id, session.merge(params))
-      end
-
-      def self.get_pending_notifications(user_id, params = {})
-        response = post("user.getPendingNotifications", {:userId => user_id}.merge(params))
-        # Two top-level keys here need returning, so we'll just return the whole thing.
-        return response['Nitro']
-      end
-
-      def get_pending_notifications(params = {})
-        response = User.get_pending_notifications(@user_id, session.merge(params))
       end
 
       def self.get_preference(user_id, name, params = {})
@@ -205,6 +283,15 @@ module Bunchball
 
       def get_responses(params = {})
         User.get_responses(@user_id, session.merge(params))
+      end
+
+      def self.gift_item(user_id, recipient_id, item_id, params = {})
+        response = post("user.giftItem", {:userId => user_id, :recipientId => recipient_id, :itemId => item_id}.merge(params))
+        return response['Nitro']
+      end
+
+      def gift_item(recipient_id, item_id, params = {})
+        response = User.gift_item(@user_id, recipient_id, item_id, session.merge(params))
       end
 
       # Wiki docs don't say on this method either that userId is required,
@@ -265,6 +352,43 @@ module Bunchball
         User.modify_user_id(@user_id, new_user_id, session.merge(params))
       end
 
+      # Wiki for [place|remove]AvatarItem is ambiguous about whether instanceName is
+      # required for place. Wiki doesn't say it's required for placeAvatarItem, and
+      # the sample request doesn't show that it is.  However, it DOES say that it's
+      # required for removeAvatarItem, yet the sample request there doesn't specify
+      # an instanceName, either.  It seems highly unlikely that placeAvatarItem and
+      # removeAvatarItem would have *different* criteria for whether the instanceName
+      # is required. I just don't know which of the two to believe, whether it's
+      # required or not. And at the moment, I don't have the information to create an
+      # avatar item and check whether place/remove work with/without an instanceName.
+      # So for now we're treating it as if it's NOT required. (TODO)
+      def self.place_avatar_item(user_id, item_id, params = {})
+        response = post("user.placeAvatarItem", {:userId => user_id, :itemId => item_id}.merge(params))
+        return response['Nitro']['AvatarRecord'] || response['Nitro']['Error']
+      end
+
+      def place_avatar_item(item_id, params = {})
+        User.place_avatar_item(@user_id, item_id, session.merge(params))
+      end
+
+      def self.purchase_item(user_id, item_id, params = {})
+        response = post("user.purchaseItem", {:userId => user_id, :itemId => item_id}.merge(params))
+        return response['Nitro']
+      end
+
+      def purchase_item(item_id, params = {})
+        response = User.purchase_item(@user_id, item_id, session.merge(params))
+      end
+
+      def self.remove_avatar_item(user_id, item_id, params = {})
+        response = post("user.removeAvatarItem", {:userId => user_id, :itemId => item_id}.merge(params))
+        return response['Nitro']['AvatarRecord'] || response['Nitro']['Error']
+      end
+
+      def remove_avatar_item(item_id, params = {})
+        User.remove_avatar_item(@user_id, item_id, session.merge(params))
+      end
+
       def self.remove_preference(user_id, name, params = {})
         response = post("user.removePreference", {:userId => user_id, :name => name}.merge(params))
         return response['Nitro']['userPreferences']
@@ -281,6 +405,27 @@ module Bunchball
 
       def reset_level(params = {})
         response = User.reset_level(@user_id, session.merge(params))
+      end
+
+      # This one requires either itemId or ownedItemId (but not both, presumably)
+      # be specified, so we have to leave that in params, rather than using a
+      # positional param for the required items.
+      def self.sellback_item(user_id, params = {})
+        response = post("user.sellbackItem", {:userId => user_id}.merge(params))
+        return response['Nitro']
+      end
+
+      def sellback_item(params = {})
+        response = User.sellback_item(@user_id, session.merge(params))
+      end
+
+      def self.set_avatar_color(user_id, instance, color, params = {})
+        response = post("user.setAvatarColor", {:userId => user_id, :instanceName => instance, :skinColor => color}.merge(params))
+        return response['Nitro']['AvatarRecord'] || response['Nitro']['Error']
+      end
+
+      def set_avatar_color(instance, color, params = {})
+        User.set_avatar_color(@user_id, instance, color, session.merge(params))
       end
 
       def self.set_level(user_id, level_name, params = {})
