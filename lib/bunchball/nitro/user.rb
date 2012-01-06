@@ -122,7 +122,7 @@ module Bunchball
       end
 
       def get_groups(params = {})
-        User.get_groups(@user_id, params)
+        User.get_groups(@user_id, session.merge(params))
       end
 
       def self.get_next_challenge(user_id, params = {})

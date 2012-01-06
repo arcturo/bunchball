@@ -229,6 +229,30 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_get_groups
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'userGroups' =>
+        {'Group' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getGroups", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_groups('wiggly')
+    assert_equal response['Group'], 'foo'
+  end
+
+  def test_get_groups_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_groups).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_groups
+    assert_equal response, 'foo'
+  end
+
   def test_get_next_challenge
     params = {:userId => 'wiggly'}
 
@@ -333,6 +357,75 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:get_responses).with('wibble', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.get_responses
+    assert_equal response, 'foo'
+  end
+
+  def test_join_group
+    params = {:userId => 'wiggly', :groupName => 'a_group'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'userGroups' =>
+        {'Group' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.joinGroup", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.join_group('wiggly', 'a_group')
+    assert_equal response['Group'], 'foo'
+  end
+
+  def test_join_group_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:join_group).with('wibble', 'a_group', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.join_group('a_group')
+    assert_equal response, 'foo'
+  end
+
+  def test_leave_all_groups
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'userGroups' => true } }
+
+    Bunchball::Nitro::User.expects(:post).with("user.leaveAllGroups", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.leave_all_groups('wiggly')
+    assert_equal response, true  # want actual true here, not just a value that evals as true
+  end
+
+  def test_leave_all_groups_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:leave_all_groups).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.leave_all_groups
+    assert_equal response, 'foo'
+  end
+
+  def test_leave_group
+    params = {:userId => 'wiggly', :groupName => 'a_group'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'userGroups' =>
+        {'Group' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.leaveGroup", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.leave_group('wiggly', 'a_group')
+    assert_equal response['Group'], 'foo'
+  end
+
+  def test_leave_group_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:leave_group).with('wibble', 'a_group', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.leave_group('a_group')
     assert_equal response, 'foo'
   end
 

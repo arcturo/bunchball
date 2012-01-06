@@ -9,6 +9,20 @@ class TestSite < Test::Unit::TestCase
     {:sessionKey => '1234'}
   end
 
+  def test_add_users_to_group
+    params = {:userIds => 'user1,user2', :groupName => 'a_group'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'groupUsers' =>
+        {'GroupUsers' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::Site.expects(:post).with('site.addUsersToGroup', params).returns(return_value)
+
+    response = Bunchball::Nitro::Site.add_users_to_group('user1,user2', 'a_group')
+    assert_equal response['GroupUsers'], 'foo'
+  end
+
   def test_get_action_feed
     # Set key instead of mocking login
     Bunchball::Nitro.api_key = "1234"
@@ -110,6 +124,34 @@ class TestSite < Test::Unit::TestCase
     assert_equal response['Challenge'], 'foo'
   end
 
+  def test_get_group_points_leaders
+    params = {}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'groupLeaders' =>
+        {'groupLeader' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::Site.expects(:post).with('site.getGroupPointsLeaders', params).returns(return_value)
+
+    response = Bunchball::Nitro::Site.get_group_points_leaders
+    assert_equal response['groupLeader'], 'foo'
+  end
+
+  def test_get_group_action_leaders
+    params = {:tags => 'a_tag,b_tag'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'groupLeaders' =>
+        {'groupLeader' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::Site.expects(:post).with('site.getGroupActionLeaders', params).returns(return_value)
+
+    response = Bunchball::Nitro::Site.get_group_action_leaders('a_tag,b_tag')
+    assert_equal response['groupLeader'], 'foo'
+  end
+
   def test_get_levels
     return_value = {'Nitro' => {'res' => 'ok', 'siteLevels' =>
         {'SiteLevel' => ['foo']}
@@ -188,6 +230,20 @@ class TestSite < Test::Unit::TestCase
 
     response = Bunchball::Nitro::Site.get_recent_updates('sum')
     assert_equal response['Update'], 'foo'
+  end
+
+  def test_remove_users_from_group
+    params = {:userIds => 'user1,user2', :groupName => 'a_group'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'groupUsers' =>
+        {'GroupUsers' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::Site.expects(:post).with('site.removeUsersFromGroup', params).returns(return_value)
+
+    response = Bunchball::Nitro::Site.remove_users_from_group('user1,user2', 'a_group')
+    assert_equal response['GroupUsers'], 'foo'
   end
 
 end

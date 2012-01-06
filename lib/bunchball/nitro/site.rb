@@ -46,12 +46,12 @@ module Bunchball
       end
 
       def self.get_group_action_leaders(tags, params = {})
-        response = post("site.getGroupActionLeaders", self.session.merge({:tags => tags}).merge(params))
+        response = post("site.getGroupActionLeaders", {:tags => tags}.merge(params))
         return response['Nitro']['groupLeaders']
       end
 
       def self.get_group_points_leaders(params = {})
-        response = post("site.getGroupPointsLeaders", self.session.merge(params))
+        response = post("site.getGroupPointsLeaders", params)
         return response['Nitro']['groupLeaders']
       end
 
@@ -83,7 +83,7 @@ module Bunchball
       end
 
       def self.remove_users_from_group(user_ids, group_name, params = {})
-        response = post("site.removeUsersFromGroup", self.session.merge(:userIds => user_ids, :groupName => group_name).merge(params))
+        response = post("site.removeUsersFromGroup", {:userIds => user_ids, :groupName => group_name}.merge(params))
         return response['Nitro']['groupUsers'] || response['Nitro']['Error']
       end
     end
