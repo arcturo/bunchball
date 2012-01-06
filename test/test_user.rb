@@ -253,6 +253,30 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_get_level
+    params = {:userIds => 'wiggly,piggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'users' =>
+        {'User' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getLevel", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_level('wiggly,piggly')
+    assert_equal response['User'], 'foo'
+  end
+
+  def test_get_level_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_level).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_level
+    assert_equal response, 'foo'
+  end
+
   def test_get_next_challenge
     params = {:userId => 'wiggly'}
 
@@ -274,6 +298,30 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:get_next_challenge).with('wibble', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.get_next_challenge
+    assert_equal response, 'foo'
+  end
+
+  def test_get_next_level
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'users' =>
+        {'User' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getNextLevel", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_next_level('wiggly')
+    assert_equal response['User'], 'foo'
+  end
+
+  def test_get_next_level_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_next_level).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_next_level
     assert_equal response, 'foo'
   end
 
@@ -482,6 +530,54 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:modify_user_id).with(u.user_id, 'puggly', u.session).returns('foo')
 
     response = u.modify_user_id('puggly')
+    assert_equal response, 'foo'
+  end
+
+  def test_reset_level
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'users' =>
+        {'User' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.resetLevel", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.reset_level('wiggly')
+    assert_equal response['User'], 'foo'
+  end
+
+  def test_reset_level_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:reset_level).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.reset_level
+    assert_equal response, 'foo'
+  end
+
+  def test_set_level
+    params = {:userId => 'wiggly', :levelName => 'level_name'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'users' =>
+        {'User' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.setLevel", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.set_level('wiggly', 'level_name')
+    assert_equal response['User'], 'foo'
+  end
+
+  def test_set_level_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:set_level).with('wibble', 'level_name', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.set_level('level_name')
     assert_equal response, 'foo'
   end
 

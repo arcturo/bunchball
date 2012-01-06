@@ -125,6 +125,24 @@ module Bunchball
         User.get_groups(@user_id, session.merge(params))
       end
 
+      def self.get_level(user_ids, params = {})
+        response = post("user.getLevel", {:userIds => user_ids}.merge(params))
+        return response['Nitro']['users']
+      end
+
+      def get_level(params = {})
+        response = User.get_level(@user_id, session.merge(params))
+      end
+
+      def self.get_next_level(user_id, params = {})
+        response = post("user.getNextLevel", {:userId => user_id}.merge(params))
+        return response['Nitro']['users']
+      end
+
+      def get_next_level(params = {})
+        response = User.get_next_level(@user_id, session.merge(params))
+      end
+
       def self.get_next_challenge(user_id, params = {})
         response = post("user.getNextChallenge", {:userId => user_id}.merge(params))
         return response['Nitro']['challenges']
@@ -217,6 +235,24 @@ module Bunchball
 
       def modify_user_id(new_user_id, params = {})
         User.modify_user_id(@user_id, new_user_id, session.merge(params))
+      end
+
+      def self.reset_level(user_id, params = {})
+        response = post("user.resetLevel", {:userId => user_id}.merge(params))
+        return response['Nitro']['users']
+      end
+
+      def reset_level(params = {})
+        response = User.reset_level(@user_id, session.merge(params))
+      end
+
+      def self.set_level(user_id, level_name, params = {})
+        response = post("user.setLevel", {:userId => user_id, :levelName => level_name}.merge(params))
+        return response['Nitro']['users']
+      end
+
+      def set_level(level_name, params = {})
+        response = User.set_level(@user_id, level_name, session.merge(params))
       end
 
       def self.transfer_points(src_user_id, dest_user_id, params = {})
