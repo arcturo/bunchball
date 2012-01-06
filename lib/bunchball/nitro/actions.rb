@@ -35,7 +35,8 @@ module Bunchball
 
       # Pings the server
       def self.hello
-        post("hello")
+        response = post("hello")
+        Bunchball::Nitro::Response.new(response)
       end
 
       def self.get_tag_id(tag_name)
