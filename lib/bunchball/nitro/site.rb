@@ -7,7 +7,7 @@ module Bunchball
       end
 
       def self.add_users_to_group(user_ids, group_name, params = {})
-        response = post("site.addUsersToGroup", self.session.merge(:userIds => user_ids, :groupName => group_name).merge(params))
+        response = post("site.addUsersToGroup", {:userIds => user_ids, :groupName => group_name}.merge(params))
         return response['Nitro']['groupUsers'] || response['Nitro']['Error']
       end
 
@@ -20,7 +20,7 @@ module Bunchball
       end
 
       def self.get_action_leaders(criteria, tags, params = {})
-        response = post("site.getActionLeaders", self.session.merge(:criteria => criteria, :tags => tags).merge(params))
+        response = post("site.getActionLeaders", {:criteria => criteria, :tags => tags}.merge(params))
         return response['Nitro']['actions']
       end
 

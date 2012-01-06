@@ -27,10 +27,7 @@ class TestSite < Test::Unit::TestCase
   end
 
   def test_get_action_leaders
-    # Set key instead of mocking login
-    Bunchball::Nitro.session_key = "1234"
-
-    params = {:criteria => 'sum', :tags => 'a_tag', :sessionKey => '1234'}
+    params = {:criteria => 'sum', :tags => 'a_tag'}
 
     return_value = {'Nitro' => {'res' => 'ok', 'actions' =>
         {'Action' => 'foo'}
