@@ -36,7 +36,7 @@ module Bunchball
       end
 
       def credit_points(points, params = {})
-        response = User.credit_points(@user_id, points, params)
+        response = User.credit_points(@user_id, points, session.merge(params))
       end
 
       def self.debit_points(user_id, points, params = {})
@@ -45,7 +45,7 @@ module Bunchball
       end
 
       def debit_points(points, params = {})
-        response = User.debit_points(@user_id, points, params)
+        response = User.debit_points(@user_id, points, session.merge(params))
       end
 
       def self.exists(user_id, params = {})
@@ -130,7 +130,7 @@ module Bunchball
       end
 
       def get_next_challenge(params = {})
-        User.get_next_challenge(@user_id, params)
+        User.get_next_challenge(@user_id, session.merge(params))
       end
 
       def self.get_points_balance(user_id, params = {})
@@ -148,7 +148,7 @@ module Bunchball
       end
 
       def get_points_history(params = {})
-        response = User.get_points_history(@user_id, params)
+        response = User.get_points_history(@user_id, session.merge(params))
       end
 
       def self.get_responses(user_id, params = {})

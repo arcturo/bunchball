@@ -43,6 +43,50 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_credit_points
+    params = {:userId => 'wiggly', :points => 30}
+
+    return_value = {'Nitro' => {'User' => 'foo'}}
+
+    Bunchball::Nitro::User.expects(:post).with("user.creditPoints", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.credit_points('wiggly', 30)
+    assert_equal response, 'foo'
+  end
+
+  # Test the instance version of the same method
+  def test_credit_points_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:credit_points).with(u.user_id, 300, u.session).returns('foo')
+
+    response = u.credit_points(300)
+    assert_equal response, 'foo'
+  end
+
+  def test_debit_points
+    params = {:userId => 'wiggly', :points => 30}
+
+    return_value = {'Nitro' => {'User' => 'foo'}}
+
+    Bunchball::Nitro::User.expects(:post).with("user.debitPoints", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.debit_points('wiggly', 30)
+    assert_equal response, 'foo'
+  end
+
+  # Test the instance version of the same method
+  def test_debit_points_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:debit_points).with(u.user_id, 300, u.session).returns('foo')
+
+    response = u.debit_points(300)
+    assert_equal response, 'foo'
+  end
+
   def test_exists
     params = {:userId => 'wiggly'}
 
@@ -135,6 +179,30 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_get_next_challenge
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'challenges' =>
+        {'Challenge' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getNextChallenge", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_next_challenge('wiggly')
+    assert_equal response['Challenge'], 'foo'
+  end
+
+  def test_get_next_challenge_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_next_challenge).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_next_challenge
+    assert_equal response, 'foo'
+  end
+
   def test_get_points_balance
     params = {:userId => 'wiggly'}
 
@@ -167,6 +235,30 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:get_points_balance).with('wibble', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.get_points_balance
+    assert_equal response, 'foo'
+  end
+
+  def test_get_points_history
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'PointsHistoryRecord' =>
+        {'PointsHistoryItem' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getPointsHistory", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_points_history('wiggly')
+    assert_equal response['PointsHistoryItem'], 'foo'
+  end
+
+  def test_get_points_history_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_points_history).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_points_history
     assert_equal response, 'foo'
   end
 

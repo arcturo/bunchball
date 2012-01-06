@@ -125,6 +125,23 @@ class TestSite < Test::Unit::TestCase
     assert_equal response.first, 'foo'
   end
 
+  def test_get_points_leaders
+    # Set key instead of mocking login
+    Bunchball::Nitro.session_key = "1234"
+
+    params = {:sessionKey => '1234'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'leaders' =>
+        {'Leader' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::Site.expects(:post).with('site.getPointsLeaders', params).returns(return_value)
+
+    response = Bunchball::Nitro::Site.get_points_leaders
+    assert_equal response['Leader'], 'foo'
+  end
+
   def test_get_recent_actions
     # Set key instead of mocking login
     Bunchball::Nitro.session_key = "1234"
