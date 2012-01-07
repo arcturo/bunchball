@@ -36,4 +36,41 @@ class TestResponse < Test::Unit::TestCase
     response = make_response({'Nitro' => {'res' => 'ok', 'Error' => {'GroupUsers' => 'foo'} } })
     assert response.errors.empty?
   end
+
+  def test_method
+    response = make_response({'Nitro' => {'res' => 'ok', 'server' => 'froggy.com', 'method' => 'a_method' } })
+    assert_equal response.method, 'a_method'
+  end
+
+  def test_nitro
+    api_response = {'Nitro' => {'res' => 'ok', 'server' => 'froggy.com', 'method' => 'a_method' } }
+    response = make_response(api_response)
+    assert_equal response.nitro, api_response['Nitro']
+  end
+
+  def test_payload_default
+    api_response = {'Nitro' => {'res' => 'ok', 'server' => 'froggy.com', 'method' => 'a_method' } }
+    response = make_response(api_response)
+    assert_equal response.payload, response.nitro
+  end
+
+  def test_payload_set
+    api_response = {'Nitro' => {'res' => 'ok', 'server' => 'froggy.com', 'method' => 'a_method',
+                    'UserResult' => 'foo'
+                   } }
+    response = make_response(api_response)
+    response.payload = response.nitro['UserResult']
+    assert_equal response.payload, 'foo'
+  end
+
+  def test_res
+    response = make_response({'Nitro' => {'res' => 'poo' } })
+    assert_equal response.res, 'poo'
+  end
+
+  def test_server
+    response = make_response({'Nitro' => {'res' => 'ok', 'server' => 'froggy.com' } })
+    assert_equal response.server, 'froggy.com'
+  end
+
 end

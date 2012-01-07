@@ -12,6 +12,15 @@ module Bunchball
         {:sessionKey => @session_key}
       end
 
+      def self.accept_friend(user_id, friend_id, params = {})
+        response = post("user.acceptFriend", {:userId => user_id, :friendId => friend_id}.merge(params))
+        return Response.new(response)
+      end
+
+      def accept_friend(friend_id, params = {})
+        response = User.accept_friend(@user_id, friend_id, session.merge(params))
+      end
+
       def self.award_challenge(user_id, challenge, params = {})
         response = post("user.awardChallenge", {:userId => user_id, :challenge => challenge}.merge(params))
         return response['Nitro']['Achievements']
@@ -217,6 +226,19 @@ module Bunchball
         User.get_competition_progress(@user_id, session.merge(params))
       end
 
+      def self.get_friends(user_id, friend_type, params = {})
+        res = post("user.getFriends", {:userId => user_id, :friendType => friend_type}.merge(params))
+        response = Response.new(res)
+        if res['Nitro']['users']
+          response.payload = res['Nitro']['users']['User'] rescue []
+        end
+        return response
+      end
+
+      def get_friends(friend_type, params = {})
+        response = User.get_friends(@user_id, friend_type, session.merge(params))
+      end
+
       # This API call does not return what the wiki says it does as of this writing:
       #   http://wiki.bunchball.com/w/page/12748024/user_getGifts
       # There are others that are also fibbed about on the Wiki.
@@ -338,6 +360,15 @@ module Bunchball
         response = User.gift_item(@user_id, recipient_id, item_id, session.merge(params))
       end
 
+      def self.invite_friend(user_id, friend_id, params = {})
+        response = post("user.inviteFriend", {:userId => user_id, :friendId => friend_id}.merge(params))
+        return Response.new(response)
+      end
+
+      def invite_friend(friend_id, params = {})
+        response = User.invite_friend(@user_id, friend_id, session.merge(params))
+      end
+
       # Wiki docs don't say on this method either that userId is required,
       # or what happens if it is left out. Typically, in methods like this,
       # if the user_id isn't specified, it defaults to the currently
@@ -450,6 +481,22 @@ module Bunchball
 
       def remove_canvas_item(item_id, instance, params = {})
         User.remove_canvas_item(@user_id, item_id, instance, session.merge(params))
+      end
+
+      # Wiki is incorrect about the return value of this API call as well. When
+      # successful, it returns something like this:
+      #
+      # {"Nitro" => { "res" => "ok", "method" => "user.removeFriend", "server"=>"...", "asyncToken"=>"..."}}
+      #
+      # Curiously, it returns pretty much the exact same thing if you attempt to
+      # remove a "friend" that doesn't exist, or is not in a friend state with user_id.
+      def self.remove_friend(user_id, friend_id, params = {})
+        response = post("user.removeFriend", {:userId => user_id, :friendId => friend_id}.merge(params))
+        return Response.new(response)
+      end
+
+      def remove_friend(friend_id, params = {})
+        response = User.remove_friend(@user_id, friend_id, session.merge(params))
       end
 
       def self.remove_preference(user_id, name, params = {})

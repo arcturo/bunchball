@@ -17,6 +17,27 @@ class TestUser < Test::Unit::TestCase
     assert_equal u.session[:sessionKey], 'winning' # heh
   end
 
+  def test_accept_friend
+    params = {:userId => 'wiggly', :friendId => 'piggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'method' => 'user.acceptFriend' }}
+    Bunchball::Nitro::User.expects(:post).with("user.acceptFriend", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.accept_friend('wiggly', 'piggly')
+    assert response.valid?
+  end
+
+  # Test the instance version of the same method
+  def test_accept_friend_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:accept_friend).with(u.user_id, 'piggly', u.session).returns('foo')
+
+    response = u.accept_friend('piggly')
+    assert_equal response, 'foo'
+  end
+
   def test_award_challenge
     # Set key instead of mocking login
     Bunchball::Nitro.session_key = "1234"
@@ -367,6 +388,44 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_get_friends_with_no_friends
+    params = {:userId => 'wiggly', :friendType => 'current'}
+
+    # This is what the crazy user API returns when there are no friends.
+    # So the keys are not arranged the same as when there are friends. Yum.
+    return_value = {'Nitro' => {'res' => 'ok', 'users' => true } }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getFriends", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_friends('wiggly', 'current')
+    assert_equal response.payload, []
+  end
+
+  def test_get_friends_with_friends
+    params = {:userId => 'wiggly', :friendType => 'current'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'users' =>
+        {'User' => [{'lastName' => 'George', 'firstName' => 'Jetson', 'userId' => 'jetson'}] }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getFriends", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_friends('wiggly', 'current')
+    assert response.payload.is_a? Array
+    assert_equal response.payload.size, 1
+  end
+
+  def test_get_friends_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_friends).with('wibble', 'current', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_friends('current')
+    assert_equal response, 'foo'
+  end
+
   def test_get_groups
     params = {:userId => 'wiggly'}
 
@@ -664,6 +723,27 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_invite_friend
+    params = {:userId => 'wiggly', :friendId => 'piggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'method' => 'user.inviteFriend' }}
+    Bunchball::Nitro::User.expects(:post).with("user.inviteFriend", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.invite_friend('wiggly', 'piggly')
+    assert response.valid?
+  end
+
+  # Test the instance version of the same method
+  def test_invite_friend_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:invite_friend).with(u.user_id, 'piggly', u.session).returns('foo')
+
+    response = u.invite_friend('piggly')
+    assert_equal response, 'foo'
+  end
+
   def test_join_group
     params = {:userId => 'wiggly', :groupName => 'a_group'}
 
@@ -900,6 +980,27 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:remove_canvas_item).with(u.user_id, 'an item', 'an instance', u.session).returns('foo')
 
     response = u.remove_canvas_item('an item', 'an instance')
+    assert_equal response, 'foo'
+  end
+
+  def test_remove_friend
+    params = {:userId => 'wiggly', :friendId => 'piggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'method' => 'user.removeFriend' }}
+    Bunchball::Nitro::User.expects(:post).with("user.removeFriend", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.remove_friend('wiggly', 'piggly')
+    assert response.valid?
+  end
+
+  # Test the instance version of the same method
+  def test_remove_friend_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:remove_friend).with(u.user_id, 'piggly', u.session).returns('foo')
+
+    response = u.remove_friend('piggly')
     assert_equal response, 'foo'
   end
 

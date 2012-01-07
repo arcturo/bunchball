@@ -15,10 +15,8 @@ class Bunchball::Nitro::Response
 
   def initialize(response)
     @api_response = response
-  end
-
-  def valid?
-    api_response['Nitro']['res'] && api_response['Nitro']['res'] == 'ok'
+    # Default payload unless we get an explicit value set
+    @payload = self.nitro
   end
 
   def errors
@@ -26,6 +24,30 @@ class Bunchball::Nitro::Response
     # there is, we sure don't want to return it as if there were.
     # TODO: Should this return nil or []?
     return [] if self.valid?
-    api_response['Nitro']['Error'] rescue []
+    nitro['Error'] rescue []
   end
+
+  def method
+    nitro['method']
+  end
+
+  # Convenience because I get tired of seeing "api_response['Nitro']" littered
+  # about, and EVERYTHING the server sends back is parsed into the 'Nitro' key
+  # by HTTParty.
+  def nitro
+    api_response['Nitro']
+  end
+
+  def res
+    nitro['res']
+  end
+
+  def server
+    nitro['server']
+  end
+
+  def valid?
+    nitro['res'] && nitro['res'] == 'ok'
+  end
+
 end
