@@ -69,6 +69,29 @@ module Bunchball
         User.create_avatar(@user_id, catalog, instance, session.merge(params))
       end
 
+      # Return values here are not documented in the Wiki, so here they are for now:
+      #
+      # { "Nitro" =>
+      #   { "res" => "ok",
+      #     "CanvasRecord" =>
+      #     { "recordId" => "CanvasModule.willy@wonka.net",
+      #       "instanceName"=>"foo_canvas",
+      #       "canvasItems"=>true
+      #     },
+      #     "method" => "user.createCanvas",
+      #     "server" => "sb00.prod.bunchball.net/nitro4.2.0",
+      #     "asyncToken"=>"4-134-139-134-134-139-134-134-139"
+      #   }
+      # }
+      def self.create_canvas(user_id, catalog, instance, params = {})
+        response = post("user.createCanvas", {:userId => user_id, :catalogName => catalog, :instanceName => instance}.merge(params))
+        return response['Nitro']['CanvasRecord'] || response['Nitro']['Error']
+      end
+
+      def create_canvas(catalog, instance, params = {})
+        User.create_canvas(@user_id, catalog, instance, session.merge(params))
+      end
+
       def self.create_competition(user_ids, comp_name, params = {})
         response = post("user.createCompetition", {:competitionName => comp_name, :userIds => user_ids}.merge(params))
         return response['Nitro']['competitions']
@@ -153,6 +176,27 @@ module Bunchball
 
       def get_avatars(params = {})
         User.get_avatars(@user_id, session.merge(params))
+      end
+
+      def self.get_canvas_items(user_id, instance_name, params = {})
+        response = post("user.getCanvasItems", {:userId => user_id, :instanceName => instance_name}.merge(params))
+        return response['Nitro']['CanvasRecord'] || response['Nitro']['Error']
+      end
+
+      def get_canvas_items(instance_name, params = {})
+        User.get_canvas_items(@user_id, instance_name, session.merge(params))
+      end
+
+      def self.get_canvases(user_id, params = {})
+        response = post("user.getCanvases", {:userId => user_id}.merge(params))
+        # valid but no canvases: @parsed_response={"Nitro"=>{"res"=>"ok", "method"=>"user.getCanvases",
+        # valid with canvases: @parsed_response={"Nitro"=>{"res"=>"ok", "UserCatalogInstance"=>{"name"=>"foo"}, "method"...
+        # invalid (presumably): @parsed_response={"Nitro"=>{"res"=>"err", "something..."}}
+        return response['Nitro']['UserCatalogInstance'] || response['Nitro']['Error']
+      end
+
+      def get_canvases(params = {})
+        User.get_canvases(@user_id, session.merge(params))
       end
 
       def self.get_challenge_progress(user_id, params = {})
@@ -371,6 +415,16 @@ module Bunchball
         User.place_avatar_item(@user_id, item_id, session.merge(params))
       end
 
+      def self.place_canvas_item(user_id, instance, x, y, z_order, params = {})
+        response = post("user.placeCanvasItem", {:userId => user_id, :instanceName => instance, :x => x, :y => y, :zOrder => z_order}.merge(params))
+        return response['Nitro']['CanvasRecord'] || response['Nitro']['Error']
+      end
+
+      # TODO : Need to test this against a real canvas and make sure that the return values are correct
+      def place_canvas_item(instance, x, y, z_order, params = {})
+        User.place_canvas_item(@user_id, instance, x, y, z_order, session.merge(params))
+      end
+
       def self.purchase_item(user_id, item_id, params = {})
         response = post("user.purchaseItem", {:userId => user_id, :itemId => item_id}.merge(params))
         return response['Nitro']
@@ -387,6 +441,15 @@ module Bunchball
 
       def remove_avatar_item(item_id, params = {})
         User.remove_avatar_item(@user_id, item_id, session.merge(params))
+      end
+
+      def self.remove_canvas_item(user_id, item_id, instance, params = {})
+        response = post("user.removeCanvasItem", {:userId => user_id, :instanceName => instance, :canvasItemId => item_id}.merge(params))
+        return response['Nitro']['CanvasRecord'] || response['Nitro']['Error']
+      end
+
+      def remove_canvas_item(item_id, instance, params = {})
+        User.remove_canvas_item(@user_id, item_id, instance, session.merge(params))
       end
 
       def self.remove_preference(user_id, name, params = {})

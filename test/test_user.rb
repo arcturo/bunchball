@@ -66,6 +66,29 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_create_canvas
+    params = {:userId => 'a_user', :catalogName => 'a catalog', :instanceName => 'an instance'}
+
+    return_value = {'Nitro' => {'CanvasRecord' =>
+        {'items' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with('user.createCanvas', params).returns(return_value)
+
+    response = Bunchball::Nitro::User.create_canvas('a_user', 'a catalog', 'an instance')
+    assert_equal response['items'], 'foo'
+  end
+
+  def test_create_canvas_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:create_canvas).with(u.user_id, 'a catalog', 'an instance', u.session).returns('foo')
+
+    response = u.create_canvas('a catalog', 'an instance')
+    assert_equal response, 'foo'
+  end
+
   def test_create_competition
     # Set key instead of mocking login
     Bunchball::Nitro.session_key = "1234"
@@ -247,6 +270,52 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:get_avatars).with(u.user_id, u.session).returns('foo')
 
     response = u.get_avatars
+    assert_equal response, 'foo'
+  end
+
+  def test_get_canvas_items
+    params = {:userId => 'a_user', :instanceName => 'an instance'}
+
+    return_value = {'Nitro' => {'CanvasRecord' =>
+        {'items' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with('user.getCanvasItems', params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_canvas_items('a_user', 'an instance')
+    assert_equal response['items'], 'foo'
+  end
+
+  def test_get_canvas_items_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:get_canvas_items).with(u.user_id, 'an instance', u.session).returns('foo')
+
+    response = u.get_canvas_items('an instance')
+    assert_equal response, 'foo'
+  end
+
+  def test_get_canvases
+    params = {:userId => 'a_user'}
+
+    return_value = {'Nitro' => {'UserCatalogInstance' =>
+        {'name' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with('user.getCanvases', params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_canvases('a_user')
+    assert_equal response['name'], 'foo'
+  end
+
+  def test_get_canvases_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:get_canvases).with(u.user_id, u.session).returns('foo')
+
+    response = u.get_canvases
     assert_equal response, 'foo'
   end
 
@@ -743,6 +812,29 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_place_canvas_item
+    params = {:userId => 'a_user', :instanceName => 'an instance', :x => 50, :y => 100, :zOrder => 1}
+
+    return_value = {'Nitro' => {'CanvasRecord' =>
+        {'canvasItems' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with('user.placeCanvasItem', params).returns(return_value)
+
+    response = Bunchball::Nitro::User.place_canvas_item('a_user', 'an instance', 50, 100, 1)
+    assert_equal response['canvasItems'], 'foo'
+  end
+
+  def test_place_canvas_item_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:place_canvas_item).with(u.user_id, 'an instance', 50, 100, 1, u.session).returns('foo')
+
+    response = u.place_canvas_item('an instance', 50, 100, 1)
+    assert_equal response, 'foo'
+  end
+
   def test_purchase_item
     params = {:userId => 'wiggly', :itemId => 'an_item'}
 
@@ -785,6 +877,29 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:remove_avatar_item).with(u.user_id, 'an item', u.session).returns('foo')
 
     response = u.remove_avatar_item('an item')
+    assert_equal response, 'foo'
+  end
+
+  def test_remove_canvas_item
+    params = {:userId => 'a_user', :canvasItemId => 'an item', :instanceName => 'an instance'}
+
+    return_value = {'Nitro' => {'CanvasRecord' =>
+        {'canvasItems' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with('user.removeCanvasItem', params).returns(return_value)
+
+    response = Bunchball::Nitro::User.remove_canvas_item('a_user', 'an item', 'an instance')
+    assert_equal response['canvasItems'], 'foo'
+  end
+
+  def test_remove_canvas_item_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:remove_canvas_item).with(u.user_id, 'an item', 'an instance', u.session).returns('foo')
+
+    response = u.remove_canvas_item('an item', 'an instance')
     assert_equal response, 'foo'
   end
 
