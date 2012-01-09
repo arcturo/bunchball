@@ -1,0 +1,20 @@
+PATH
+  remote: .
+  specs:
+    bunchball (1.0.0)
+      httparty
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    httparty (0.8.1)
+      multi_json
+      multi_xml
+    multi_json (1.0.4)
+    multi_xml (0.4.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bunchball!
