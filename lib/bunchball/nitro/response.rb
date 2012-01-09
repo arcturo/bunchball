@@ -35,7 +35,7 @@ class Bunchball::Nitro::Response
   # about, and EVERYTHING the server sends back is parsed into the 'Nitro' key
   # by HTTParty.
   def nitro
-    api_response['Nitro']
+    @api_response['Nitro']
   end
 
   def res
