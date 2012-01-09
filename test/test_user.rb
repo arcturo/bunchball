@@ -671,7 +671,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.getPointsBalance", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_points_balance('wiggly')
-    assert_equal response['pointCategories']['PointCategory']['points'], '877'
+    assert_equal response.payload['pointCategories']['PointCategory']['points'], '877'
   end
 
   # Test the instance version of the same method

@@ -355,7 +355,9 @@ module Bunchball
 
       def self.get_points_balance(user_id, params = {})
         response = post("user.getPointsBalance", {:userId => user_id}.merge(params))
-        return response['Nitro']['Balance']
+        response = Response.new(response)
+        response.payload = response.nitro['Balance']
+        response
       end
 
       def get_points_balance(params = {})
