@@ -33,6 +33,13 @@ module Bunchball
         User.log_action(user_id, tags, params)
       end
 
+      def self.get_error_codes(params = {})
+        response = post("server.getErrorCodes", params)
+        response = Response.new(response)
+        response.payload = response.nitro['errorCodeList']
+        response
+      end
+
       # Pings the server
       def self.hello
         response = post("hello")
