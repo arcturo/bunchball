@@ -113,4 +113,25 @@ class TestAdmin < Test::Unit::TestCase
     assert_equal 'winning', response
   end
 
+  def test_update_action_tag
+    params = {:tagId => 'a_tag'}
+
+    return_value = { 'Nitro' => { 'res' => 'ok',
+                                  "tags" =>
+                                  { "Tag" =>
+                                    { "name" => "a_tag", "category" => "0", "isActionTag" => "1", "rateLimit" => "3",
+                                      "id" => "2297149096", "isEditable" => "1", "serviceActionType" => "1",
+                                      "clientId" => "144464|-563|8952078810395989", "serviceType" => "1",
+                                      "lowSecurity" => "1", "prefixMatch" => "0"
+                                    }
+                                  },
+                                }
+                   }
+
+    Bunchball::Nitro::Admin.expects(:post).with("admin.updateActionTag", params).returns(return_value)
+
+    response = Bunchball::Nitro::Admin.update_action_tag('a_tag')
+    assert_equal response.payload['name'], 'a_tag'
+  end
+
 end

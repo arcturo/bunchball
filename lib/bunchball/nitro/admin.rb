@@ -20,6 +20,27 @@ module Bunchball
         return response['Nitro']['challenges'] || response['Nitro']['Error']
       end
 
+      # This method is undocumented in the Bunchball Wiki
+      #
+      # API returns (on success):
+      #
+      # {"Nitro" =>
+      #   {"res" => "ok", "method"=>"admin.deleteActionTag", "server"=>"sb00.prod.bunchball.net/nitro4.2.0",
+      #    "DeleteSuccess" => {"id"=>"2297149096"},
+      #    "asyncToken" => "2-182-188-182-182-188-182-182-188"
+      #   }
+      # }
+
+      def self.delete_action_tag(tag_id, params = {})
+        response = post("admin.deleteActionTag", {:tagId => tag_id}.merge(params))
+        p response
+        if (response['Nitro']['res'] == 'ok') && response['Nitro']['DeleteSuccess']
+          return response['Nitro']['DeleteSuccess']['id']
+        else
+          return nil
+        end
+      end
+
       # This one is a bit tricky, as HTTParty parses up the XML returned from
       # every HTTP request, and doesn't make available the raw XML. So we get
       # back, not an XML file, but a Ruby object parsed from it.  Perhaps later
@@ -116,34 +137,11 @@ module Bunchball
 
       def self.update_action_tag(tag_id, params = {})
         response = post("admin.updateActionTag", {:tagId => tag_id}.merge(params))
-        p response
-        if (response['Nitro']['res'] == 'ok') && response['Nitro']['tags']
-          return response['Nitro']['tags']['Tag']
-        else
-          return nil
-        end
+        response = Response.new response
+        response.payload = response.valid? ? response.nitro['tags']['Tag'] : nil
+        return response
       end
 
-      # This method is undocumented in the Bunchball Wiki
-      #
-      # API returns (on success):
-      #
-      # {"Nitro" =>
-      #   {"res" => "ok", "method"=>"admin.deleteActionTag", "server"=>"sb00.prod.bunchball.net/nitro4.2.0",
-      #    "DeleteSuccess" => {"id"=>"2297149096"},
-      #    "asyncToken" => "2-182-188-182-182-188-182-182-188"
-      #   }
-      # }
-
-      def self.delete_action_tag(tag_id, params = {})
-        response = post("admin.deleteActionTag", {:tagId => tag_id}.merge(params))
-        p response
-        if (response['Nitro']['res'] == 'ok') && response['Nitro']['DeleteSuccess']
-          return response['Nitro']['DeleteSuccess']['id']
-        else
-          return nil
-        end
-      end
     end
   end
 end
