@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bunchball (1.0.0)
+    bunchball (0.2.1)
       httparty
 
 GEM

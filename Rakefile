@@ -1,10 +1,10 @@
-# -*- ruby -*-
+$LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
+require "bunchball/version"
 
-require 'rubygems'
-require 'hoe'
-
-Hoe.spec 'bunchball' do
-  developer('Arcturo', 'info@arcturo.com')
+task :build do
+  system "gem build bunchball.gemspec"
 end
 
-# vim: syntax=ruby
+task :release => :build do
+  system "gem push bunchball-#{Bunchball::VERSION}"
+end

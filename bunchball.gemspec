@@ -1,12 +1,14 @@
 # -*- encoding: utf-8 -*-
-$:.push File.expand_path("../lib", __FILE__)
-require 'bunchball'
+lib = File.expand_path('../lib/', __FILE__)
+$:.unshift lib unless $:.include?(lib)
+
+require 'bunchball/version'
 
 Gem::Specification.new do |s|
   s.name        = "bunchball"
   s.version     = Bunchball::VERSION
-  s.authors     = ["Ryan Waldron"]
-  s.email       = ["rew@arcturo.com"]
+  s.authors     = ["Arcturo"]
+  s.email       = ["info@arcturo.com"]
   s.homepage    = "http://arcturo.com"
   s.summary     = %q{Wrapper for the Bunchball.com API}
   s.description = %q{The gem provides a fairly thin wrapper around connections to the Bunchball gamification API.}

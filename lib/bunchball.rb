@@ -2,6 +2,8 @@ $:.unshift(File.dirname(__FILE__))
 
 require 'httparty'
 
+require 'bunchball/version'
+
 require 'bunchball/nitro/api_base'
 require 'bunchball/nitro/actions'
 require 'bunchball/nitro/actions_manager'
@@ -12,8 +14,6 @@ require 'bunchball/nitro/site'
 require 'bunchball/nitro/user'
 
 module Bunchball
-  VERSION = '1.0.0'
-
   module Nitro
     class <<self
       attr_accessor :format, :api_key, :current_user
