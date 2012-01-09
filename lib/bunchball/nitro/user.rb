@@ -23,7 +23,9 @@ module Bunchball
 
       def self.award_challenge(user_id, challenge, params = {})
         response = post("user.awardChallenge", {:userId => user_id, :challenge => challenge}.merge(params))
-        return response['Nitro']['Achievements']
+        response = Response.new response
+        response.payload = response.nitro['Achievements']
+        return response
       end
 
       def award_challenge(challenge, params = {})
@@ -560,6 +562,15 @@ module Bunchball
 
       def reset_level(params = {})
         response = User.reset_level(@user_id, session.merge(params))
+      end
+
+      def self.save_comment(user_id, recipient_id, value, params = {})
+        response = post("user.saveComment", {:userId => user_id, :recipientId => recipient_id, :value => value}.merge(params))
+        Response.new(response)
+      end
+
+      def save_comment(recipient_id, value, params = {})
+        User.save_comment(@user_id, recipient_id, value, session.merge(params))
       end
 
       # This one requires either itemId or ownedItemId (but not both, presumably)

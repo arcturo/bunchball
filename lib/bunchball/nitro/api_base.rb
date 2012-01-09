@@ -12,7 +12,7 @@ module Bunchball
       def self.post(api_method, params = {})
         p "In ApiBase.post('#{api_method}', #{params})"
         @@response = HTTParty.post(Bunchball::Nitro.endpoint, :body => request_defaults(api_method).merge(params))
-        
+
         if @@response.code != 200
           raise "There was an error!"
         else

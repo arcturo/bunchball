@@ -39,9 +39,6 @@ class TestUser < Test::Unit::TestCase
   end
 
   def test_award_challenge
-    # Set key instead of mocking login
-    Bunchball::Nitro.session_key = "1234"
-
     params = {:userId => 'wiggly', :challenge => 'A challenge'}
 
     return_value = {'Nitro' => {'Achievements' => {'challengesAchieved' => {'ChallengeAchieved' =>
@@ -51,8 +48,8 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.awardChallenge", params).returns(return_value)
 
     response = Bunchball::Nitro::User.award_challenge('wiggly', 'A challenge')
-    assert_equal 'A challenge', response['challengesAchieved']['ChallengeAchieved']['name']
-    assert_equal '80', response['challengesAchieved']['ChallengeAchieved']['points']
+    assert_equal 'A challenge', response.payload['challengesAchieved']['ChallengeAchieved']['name']
+    assert_equal '80', response.payload['challengesAchieved']['ChallengeAchieved']['points']
   end
 
   def test_award_challenge_instance
@@ -1160,6 +1157,26 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:reset_level).with('wibble', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.reset_level
+    assert_equal response, 'foo'
+  end
+
+  def test_save_comment
+    params = {:userId => 'a_user', :recipientId => 'recipient', :value => 'you rock'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'server' => 'gonzo27.bunchball.net/nitro', 'method' => 'user.saveComment' } }
+
+    Bunchball::Nitro::User.expects(:post).with('user.saveComment', params).returns(return_value)
+
+    response = Bunchball::Nitro::User.save_comment('a_user', 'recipient', 'you rock')
+    assert response.valid?
+  end
+
+  def test_save_comment_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:save_comment).with(u.user_id, 'recipient', 'first post!', u.session).returns('foo')
+
+    response = u.save_comment('recipient', 'first post!')
     assert_equal response, 'foo'
   end
 
