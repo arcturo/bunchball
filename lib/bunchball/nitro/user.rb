@@ -145,6 +145,15 @@ module Bunchball
         response = User.debit_points(@user_id, points, session.merge(params))
       end
 
+      def self.delete_comment(sender, recipient, comment_id, params = {})
+        response = post("user.deleteComment", {:sender => sender, :recipient => recipient, :commentId => comment_id}.merge(params))
+        Response.new(response)
+      end
+
+      def delete_comment(recipient, comment_id, params = {})
+        User.delete_comment(@user_id, recipient, comment_id, session.merge(params))
+      end
+
       def self.exists(user_id, params = {})
         params[:storeResponse] = params[:storeResponse].to_s if params[:storeResponse]
         response = post("user.exists", {:userId => user_id}.merge(params))

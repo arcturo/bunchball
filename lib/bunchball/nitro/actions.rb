@@ -44,6 +44,12 @@ module Bunchball
           return tag['id']
         end
       end
+
+      def self.status
+        response = post("server.status")
+        Bunchball::Nitro::Response.new(response)
+      end
+
     end
   end
 end

@@ -198,6 +198,26 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_delete_comment
+    params = {:sender => 'a sender', :recipient => 'a recipient', :commentId => 'a_comment_id'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'server' => 'gonzo27.bunchball.net/nitro', 'method' => 'user.deleteComment' } }
+
+    Bunchball::Nitro::User.expects(:post).with('user.deleteComment', params).returns(return_value)
+
+    response = Bunchball::Nitro::User.delete_comment('a sender', 'a recipient', 'a_comment_id')
+    assert response.valid?
+  end
+
+  def test_delete_comment_instance
+    u = setup_user
+
+    Bunchball::Nitro::User.expects(:delete_comment).with(u.user_id, 'recipient', 'a_comment_id', u.session).returns('foo')
+
+    response = u.delete_comment('recipient', 'a_comment_id')
+    assert_equal response, 'foo'
+  end
+
   def test_exists
     params = {:userId => 'wiggly'}
 
