@@ -6,18 +6,24 @@ module Bunchball
 
       def self.create_action_tag(name, params = {})
         response = post("admin.createActionTag", {:name => name}.merge(params))
-        return response['Nitro']['tags'] || response['Nitro']['Error']
+        response = Response.new(response)
+        response.payload = response.nitro['tags'] if response.valid?
+        return response
       end
 
       def self.create_challenge(name, params = {})
         response = post("admin.createChallenge", {:name => name}.merge(params))
-        return response['Nitro']['challenges'] || response['Nitro']['Error']
+        response = Response.new(response)
+        response.payload = response.nitro['challenges'] if response.valid?
+        return response
       end
 
       def self.create_rule(rule_type, params = {})
         return nil unless RULE_TYPES.include? rule_type
         response = post("admin.createRule", {:type => rule_type}.merge(params))
-        return response['Nitro']['challenges'] || response['Nitro']['Error']
+        response = Response.new(response)
+        response.payload = response.nitro['challenges'] if response.valid?
+        return response
       end
 
       # This method is undocumented in the Bunchball Wiki
@@ -33,12 +39,9 @@ module Bunchball
 
       def self.delete_action_tag(tag_id, params = {})
         response = post("admin.deleteActionTag", {:tagId => tag_id}.merge(params))
-        p response
-        if (response['Nitro']['res'] == 'ok') && response['Nitro']['DeleteSuccess']
-          return response['Nitro']['DeleteSuccess']['id']
-        else
-          return nil
-        end
+        response = Response.new response
+        response.payload = response.valid? ? response.nitro['DeleteSuccess']['id'] : nil
+        return response
       end
 
       # This one is a bit tricky, as HTTParty parses up the XML returned from
@@ -48,25 +51,27 @@ module Bunchball
       # the object.
       def self.export_locale_translations(locale, params = {})
         response = post("admin.exportLocaleTranslations", {:locale => locale}.merge(params))
-        if (response['Nitro']['res'] == 'ok')
-          return response.body
-        else
-          return nil
-        end
+        response = Response.new(response)
+        response.payload = response.valid? ? response.body : nil
+        return response
       end
 
       def self.get_action_tags(params = {})
         response = post("admin.getActionTags", params)
-        if (response['Nitro']['res'] == 'ok') && response['Nitro']['tags']
-          return response['Nitro']['tags']['Tag']
+        response = Response.new(response)
+        if response.valid? && response.nitro['tags']
+          response.payload = response.nitro['tags']['Tag']
         else
-          return nil
+          response.payload = nil
         end
+        return response
       end
 
       def self.get_challenges(params = {})
         response = post("admin.getChallenges", params)
-        return response['Nitro']['challenges'] || response['Nitro']['Error']
+        response = Response.new(response)
+        response.payload = response.nitro['challenges'] if response.valid?
+        return response
       end
 
       # This method is undocumented in the Bunchball Wiki
@@ -112,11 +117,9 @@ module Bunchball
       # useful object.
       def self.import_locale_translations(locale, data, params = {})
         response = post("admin.exportLocaleTranslations", {:locale => locale, :data => data}.merge(params))
-        if (response['Nitro']['res'] == 'ok')
-          return response.body
-        else
-          return nil
-        end
+        response = Response.new(response)
+        response.payload = response.valid? ? response.body : nil
+        return response
       end
 
       # This method is undocumented in the Bunchball Wiki
