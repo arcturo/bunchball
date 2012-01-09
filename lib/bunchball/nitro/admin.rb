@@ -48,6 +48,44 @@ module Bunchball
         return response['Nitro']['challenges'] || response['Nitro']['Error']
       end
 
+      # This method is undocumented in the Bunchball Wiki
+      #
+      # API returns (on success):
+      #
+      # { "Nitro" =>
+      #   { "res" => "ok",
+      #     "method" => "admin.getCompleteUserRecord",
+      #     "server"=>"sb00.prod.bunchball.net/nitro4.2.0",
+      #     "asyncToken"=>"1-109-105-101-109-105-101-109-105"
+      #     "User" =>
+      #     { "SiteLevel" =>
+      #       { "iconUrl" => "http://assets.bunchball.com/widgets/staticimages/poker/levels/09_sharkIcon.png",
+      #         "name" => "Shark", "timestamp" => "1326139417", "points" => "900", "type" => "points",
+      #         "description" => "Shark"
+      #       },
+      #       "adminType" => "0", "id" => "3657016176",
+      #       "Balance" =>
+      #       { "pointCategories" =>
+      #         { "PointCategory" =>
+      #           { "shortName" => "Pts", "iconUrl" => "", "name" => "Points", "premium" => "0",
+      #             "isDefault" => "true", "points" => "1100", "id" => "283426",
+      #             "lifetimeBalance" => "1100"
+      #           }
+      #         },
+      #         "points" => "1100", "userId" => "3", "lifetimeBalance" => "1100"
+      #       },
+      #       "userId" => "3"
+      #     }
+      #   }
+      # }
+
+      def self.get_complete_user_record(user_id, params = {})
+        response = post("admin.getCompleteUserRecord", {:userId => user_id}.merge(params))
+        response = Response.new(response)
+        response.payload = response.nitro['User']
+        return response
+      end
+
       # See comments for the sister method export_locale_translations. This
       # may not work as expected; in particular, it probably won't return a
       # useful object.

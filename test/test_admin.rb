@@ -84,6 +84,24 @@ class TestAdmin < Test::Unit::TestCase
     assert_equal response['Challenge'], 'foo'
   end
 
+  def test_get_complete_user_record
+    params = {:userId => "a_user"}
+
+    return_value = { 'Nitro' => { 'res' => 'ok',
+                                  'User' => {
+                                    'adminType' => '0',
+                                    'id'        => '3657016176',
+                                    'userId'    => 'a_user'
+                                  }
+                                }
+                   }
+
+    Bunchball::Nitro::Admin.expects(:post).with("admin.getCompleteUserRecord", params).returns(return_value)
+
+    response = Bunchball::Nitro::Admin.get_complete_user_record('a_user')
+    assert_equal response.payload['userId'], 'a_user'
+  end
+
   def test_login_admin
     body_params = {:method => 'admin.loginAdmin', :userId => 'winnerwinner@chickendinner.com',
                    :password => 'password', :apiKey => "1234"}
