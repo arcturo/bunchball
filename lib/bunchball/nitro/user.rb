@@ -30,6 +30,20 @@ module Bunchball
         User.award_challenge(@user_id, challenge, session.merge(params))
       end
 
+      def self.broadcast(user_id, message, params = {})
+        response = Response.new post("user.broadcast", {:userId => user_id, :message => message}.merge(params))
+        if response.nitro['SocialLink'] == true    # actual true, not a 'truthy' value
+          response.payload = []
+        else
+          response.payload = response.nitro['SocialLink']
+        end
+        return response
+      end
+
+      def broadcast(message, params = {})
+        User.broadcast(@user_id, message, session.merge(params))
+      end
+
       # Return values not documented in Wiki for this method, so here
       # they are for now:
 
@@ -226,6 +240,15 @@ module Bunchball
         User.get_competition_progress(@user_id, session.merge(params))
       end
 
+      def self.get_custom_url(user_id, tag, landing_url, params = {})
+        response = post("user.getCustomUrl", {:userId => user_id, :tag => tag, :landingUrl => landing_url}.merge(params))
+        Response.new response
+      end
+
+      def get_custom_url(tag, landing_url, params = {})
+        User.get_custom_url(@user_id, tag, landing_url, session.merge(params))
+      end
+
       def self.get_friends(user_id, friend_type, params = {})
         res = post("user.getFriends", {:userId => user_id, :friendType => friend_type}.merge(params))
         response = Response.new(res)
@@ -349,6 +372,15 @@ module Bunchball
 
       def get_responses(params = {})
         User.get_responses(@user_id, session.merge(params))
+      end
+
+      def self.get_social_status(user_id, params = {})
+        response = post("user.getSocialStatus", {:userId => user_id}.merge(params))
+        return Response.new response
+      end
+
+      def get_social_status(params = {})
+        User.get_social_status(@user_id, session.merge(params))
       end
 
       def self.gift_item(user_id, recipient_id, item_id, params = {})
@@ -563,6 +595,33 @@ module Bunchball
 
       def set_preferences(names, params = {})
         response = User.set_preferences(@user_id, names, session.merge(params))
+      end
+
+      # This very strangely-named method doesn't actually set a social 'status' (in the way
+      # the various social networks use it), but rather sets the social network connection
+      # credentials to allow the app to interact with the given user's social apps.  Also,
+      # the documentation only shows/documents Facebook keys, though the sample request shows
+      # Twitter return values, and the social API methods generally act as though they will
+      # handle Twitter as well.
+      #
+      # TODO : determine whether the API allows undocumented Twitter keys in this method, or
+      # some other way to establish Twitter credentials in the app.
+      def self.set_social_status(user_id, facebook_id, params = {})
+        response = post("user.setSocialStatus", {:userId => user_id, :facebookId => facebook_id}.merge(params))
+        return Response.new response
+      end
+
+      def set_social_status(facebook_id, params = {})
+        User.set_social_status(@user_id, facebook_id, session.merge(params))
+      end
+
+      def self.social_link_perform_connector_action(user_id, action, account, params = {})
+        response = post("user.socialLinkPerformConnectorAction", {:userId => user_id, :action => action, :account => account}.merge(params))
+        Response.new response
+      end
+
+      def social_link_perform_connector_action(action, account, params = {})
+        User.social_link_perform_connector_action(@user_id, action, account, session.merge(params))
       end
 
       def self.store_notifications(user_ids, notification_names, params = {})

@@ -64,6 +64,27 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_broadcast
+    params = {:userId => 'wiggly', :message => 'a message'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'method' => 'user.broadcast', 'SocialLink' => true }}
+    Bunchball::Nitro::User.expects(:post).with("user.broadcast", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.broadcast('wiggly', 'a message')
+    assert response.valid?
+  end
+
+  # Test the instance version of the same method
+  def test_broadcast_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:broadcast).with(u.user_id, 'a message', u.session).returns('foo')
+
+    response = u.broadcast('a message')
+    assert_equal response, 'foo'
+  end
+
   def test_create_avatar
     params = {:userId => 'a_user', :catalogName => 'a catalog', :instanceName => 'an instance'}
 
@@ -388,6 +409,27 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_get_custom_url
+    params = {:userId => 'wiggly', :tag => 'a tag', :landingUrl => 'http://bunchball.com'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'CustomUrl' => 'foo' } }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getCustomUrl", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_custom_url('wiggly', 'a tag', 'http://bunchball.com')
+    assert_equal response.payload['CustomUrl'], 'foo'
+  end
+
+  def test_get_custom_url_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_custom_url).with('wibble', 'a tag', 'http://bunchball.com', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_custom_url('a tag', 'http://bunchball.com')
+    assert_equal response, 'foo'
+  end
+
   def test_get_friends_with_no_friends
     params = {:userId => 'wiggly', :friendType => 'current'}
 
@@ -519,33 +561,6 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:get_next_level).with('wibble', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.get_next_level
-    assert_equal response, 'foo'
-  end
-
-  def test_owned_items
-    # This one requires one of a pair of item id specifiers be present in params,
-    # so we don't use a positional paramater for it. Just pick one for the test.
-    params = {:userId => 'wiggly'}
-
-    return_value = {'Nitro' => {'res' => 'ok', 'OwnedItemsRecord' =>
-        {'ownedItems' => 'foo'}
-      }
-    }
-
-    Bunchball::Nitro::User.expects(:post).with("user.getOwnedItems", params).returns(return_value)
-
-    response = Bunchball::Nitro::User.get_owned_items('wiggly')
-    assert_equal response['ownedItems'], 'foo'
-  end
-
-  # Test the instance version of the same method
-  def test_owned_items_instance
-    u = setup_user
-
-    # Mock out the class method with the added params
-    Bunchball::Nitro::User.expects(:get_owned_items).with(u.user_id, u.session).returns('foo')
-
-    response = u.get_owned_items
     assert_equal response, 'foo'
   end
 
@@ -698,6 +713,27 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:get_responses).with('wibble', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.get_responses
+    assert_equal response, 'foo'
+  end
+
+  def test_get_social_status
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'Facebook' => {'connected' => 'foo' } } }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getSocialStatus", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_social_status('wiggly')
+    assert_equal response.payload['Facebook']['connected'], 'foo'
+  end
+
+  def test_get_social_status_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_social_status).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_social_status
     assert_equal response, 'foo'
   end
 
@@ -866,6 +902,33 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:modify_user_id).with(u.user_id, 'puggly', u.session).returns('foo')
 
     response = u.modify_user_id('puggly')
+    assert_equal response, 'foo'
+  end
+
+  def test_owned_items
+    # This one requires one of a pair of item id specifiers be present in params,
+    # so we don't use a positional paramater for it. Just pick one for the test.
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'OwnedItemsRecord' =>
+        {'ownedItems' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getOwnedItems", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_owned_items('wiggly')
+    assert_equal response['ownedItems'], 'foo'
+  end
+
+  # Test the instance version of the same method
+  def test_owned_items_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_owned_items).with(u.user_id, u.session).returns('foo')
+
+    response = u.get_owned_items
     assert_equal response, 'foo'
   end
 
@@ -1168,6 +1231,48 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:set_preferences).with('wibble', 'preference1|preference2', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.set_preferences('preference1|preference2')
+    assert_equal response, 'foo'
+  end
+
+  def test_set_social_status
+    params = {:userId => 'wiggly', :facebookId => '1234567'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'Facebook' => {'connected' => 'foo' } } }
+
+    Bunchball::Nitro::User.expects(:post).with("user.setSocialStatus", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.set_social_status('wiggly', '1234567')
+    assert_equal response.payload['Facebook']['connected'], 'foo'
+  end
+
+  def test_set_social_status_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:set_social_status).with('wibble', '1234567', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.set_social_status('1234567')
+    assert_equal response, 'foo'
+  end
+
+  def test_social_link_perform_connector_action
+    params = {:userId => 'wiggly', :action => 'facebook fan', :account => '1234567'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'SocialLink' => 'foo' } }
+
+    Bunchball::Nitro::User.expects(:post).with("user.socialLinkPerformConnectorAction", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.social_link_perform_connector_action('wiggly', 'facebook fan', '1234567')
+    assert_equal response.payload['SocialLink'], 'foo'
+  end
+
+  def test_social_link_perform_connector_action_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:social_link_perform_connector_action).with('wibble', 'facebook fan', '1234567', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.social_link_perform_connector_action('facebook fan', '1234567')
     assert_equal response, 'foo'
   end
 
