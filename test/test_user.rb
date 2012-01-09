@@ -385,6 +385,30 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_get_comments
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'UserComments' =>
+        {'UserComment' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getComments", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_comments('wiggly')
+    assert_equal response.payload['UserComment'], 'foo'
+  end
+
+  def test_get_comments_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_comments).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_comments
+    assert_equal response, 'foo'
+  end
+
   def test_get_competition_progress
     params = {:userId => 'wiggly'}
 
@@ -465,6 +489,30 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:get_friends).with('wibble', 'current', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.get_friends('current')
+    assert_equal response, 'foo'
+  end
+
+  def test_get_gifts
+    params = {:userIds => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'users' =>
+        {'User' => 'foo' }
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getGifts", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_gifts('wiggly')
+    assert_equal response.payload, 'foo'
+  end
+
+  def test_get_gifts_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_gifts).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+
+    response = u.get_gifts
     assert_equal response, 'foo'
   end
 

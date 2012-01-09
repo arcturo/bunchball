@@ -231,6 +231,17 @@ module Bunchball
         User.get_challenge_progress(@user_id, session.merge(params))
       end
 
+      def self.get_comments(user_id, params = {})
+        response = post("user.getComments", {:userId => user_id}.merge(params))
+        response = Response.new(response)
+        response.payload = response.nitro['UserComments']
+        return response
+      end
+
+      def get_comments(params = {})
+        User.get_comments(@user_id, session.merge(params))
+      end
+
       def self.get_competition_progress(user_id, params = {})
         response = post("user.getCompetitionProgress", {:userId => user_id}.merge(params))
         return response['Nitro']['competitions']
@@ -267,11 +278,13 @@ module Bunchball
       # There are others that are also fibbed about on the Wiki.
       def self.get_gifts(user_ids, params = {})
         response = post("user.getGifts", {:userIds => user_ids}.merge(params))
-        return response['Nitro']['users']['User']
+        response = Response.new(response)
+        response.payload = response.nitro['users']['User']
+        return response
       end
 
       def get_gifts(params = {})
-        response = User.get_gifts(@user_id, session.merge(params))
+        User.get_gifts(@user_id, session.merge(params))
       end
 
       def self.get_groups(user_id, params = {})
