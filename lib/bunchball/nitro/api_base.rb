@@ -20,12 +20,6 @@ module Bunchball
         if @@response.code != 200
           raise "There was an error!"
         else
-          p "*"*80
-          p @@response.code
-          p @@response.class
-          p "*"*80
-          p @@response
-          p "*"*80
           @@response
         end
       end

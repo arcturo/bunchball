@@ -20,7 +20,7 @@ class TestSite < Test::Unit::TestCase
     Bunchball::Nitro::Site.expects(:post).with('site.addUsersToGroup', params).returns(return_value)
 
     response = Bunchball::Nitro::Site.add_users_to_group('user1,user2', 'a_group')
-    assert_equal response['GroupUsers'], 'foo'
+    assert_equal response.payload['GroupUsers'], 'foo'
   end
 
   def test_get_action_feed
@@ -37,7 +37,7 @@ class TestSite < Test::Unit::TestCase
     Bunchball::Nitro::Site.expects(:post).with('site.getActionFeed', params).returns(return_value)
 
     response = Bunchball::Nitro::Site.get_action_feed
-    assert_equal response['item'], 'foo'
+    assert_equal response.payload['item'], 'foo'
   end
 
   def test_get_action_leaders
@@ -51,7 +51,7 @@ class TestSite < Test::Unit::TestCase
     Bunchball::Nitro::Site.expects(:post).with('site.getActionLeaders', params).returns(return_value)
 
     response = Bunchball::Nitro::Site.get_action_leaders('sum', 'a_tag')
-    assert_equal response['Action'], 'foo'
+    assert_equal response.payload['Action'], 'foo'
   end
 
   def test_get_action_target_leaders
@@ -68,7 +68,7 @@ class TestSite < Test::Unit::TestCase
     Bunchball::Nitro::Site.expects(:post).with('site.getActionTargetLeaders', params).returns(return_value)
 
     response = Bunchball::Nitro::Site.get_action_target_leaders('sum', 'a_tag')
-    assert_equal response['Target'], 'foo'
+    assert_equal response.payload['Target'], 'foo'
   end
 
   def test_get_catalog
@@ -86,11 +86,12 @@ class TestSite < Test::Unit::TestCase
     Bunchball::Nitro::Site.expects(:post).with('site.getCatalog', {}).returns(return_value)
 
     response = Bunchball::Nitro::Site.get_catalog
-    assert_equal response.keys.size, 2
-    assert response.has_key? 'categories'
-    assert response.has_key? 'catalogItems'
-    assert response['categories']['Category'].is_a? Array
-    assert response['catalogItems']['CatalogItem'].is_a? Array
+    payload = response.payload
+    assert_equal payload.keys.size, 2
+    assert payload.has_key? 'categories'
+    assert payload.has_key? 'catalogItems'
+    assert payload['categories']['Category'].is_a? Array
+    assert payload['catalogItems']['CatalogItem'].is_a? Array
   end
 
   def test_get_catalog_item
@@ -104,7 +105,7 @@ class TestSite < Test::Unit::TestCase
     Bunchball::Nitro::Site.expects(:post).with('site.getCatalogItem', params).returns(return_value)
 
     response = Bunchball::Nitro::Site.get_catalog_item('an_item_id')
-    assert_equal response, 'foo'
+    assert_equal response.payload, 'foo'
   end
 
   def test_get_challenge_leaders
@@ -121,7 +122,7 @@ class TestSite < Test::Unit::TestCase
     Bunchball::Nitro::Site.expects(:post).with('site.getChallengeLeaders', params).returns(return_value)
 
     response = Bunchball::Nitro::Site.get_challenge_leaders
-    assert_equal response['Challenge'], 'foo'
+    assert_equal response.payload['Challenge'], 'foo'
   end
 
   def test_get_group_points_leaders
@@ -135,7 +136,7 @@ class TestSite < Test::Unit::TestCase
     Bunchball::Nitro::Site.expects(:post).with('site.getGroupPointsLeaders', params).returns(return_value)
 
     response = Bunchball::Nitro::Site.get_group_points_leaders
-    assert_equal response['groupLeader'], 'foo'
+    assert_equal response.payload['groupLeader'], 'foo'
   end
 
   def test_get_group_action_leaders
@@ -149,7 +150,7 @@ class TestSite < Test::Unit::TestCase
     Bunchball::Nitro::Site.expects(:post).with('site.getGroupActionLeaders', params).returns(return_value)
 
     response = Bunchball::Nitro::Site.get_group_action_leaders('a_tag,b_tag')
-    assert_equal response['groupLeader'], 'foo'
+    assert_equal response.payload['groupLeader'], 'foo'
   end
 
   def test_get_levels
@@ -161,7 +162,7 @@ class TestSite < Test::Unit::TestCase
     Bunchball::Nitro::Site.expects(:post).with('site.getLevels', {}).returns(return_value)
 
     response = Bunchball::Nitro::Site.get_levels
-    assert_equal response, 'foo'
+    assert_equal response.payload, 'foo'
   end
 
   def test_get_points_leaders
@@ -178,7 +179,7 @@ class TestSite < Test::Unit::TestCase
     Bunchball::Nitro::Site.expects(:post).with('site.getPointsLeaders', params).returns(return_value)
 
     response = Bunchball::Nitro::Site.get_points_leaders
-    assert_equal response['Leader'], 'foo'
+    assert_equal response.payload['Leader'], 'foo'
   end
 
   def test_get_recent_actions
@@ -195,7 +196,7 @@ class TestSite < Test::Unit::TestCase
     Bunchball::Nitro::Site.expects(:post).with('site.getRecentActions', params).returns(return_value)
 
     response = Bunchball::Nitro::Site.get_recent_actions
-    assert_equal response['Action'], 'foo'
+    assert_equal response.payload['Action'], 'foo'
   end
 
   def test_get_recent_challenges
@@ -212,7 +213,7 @@ class TestSite < Test::Unit::TestCase
     Bunchball::Nitro::Site.expects(:post).with('site.getRecentChallenges', params).returns(return_value)
 
     response = Bunchball::Nitro::Site.get_recent_challenges
-    assert_equal response['Challenge'], 'foo'
+    assert_equal response.payload['Challenge'], 'foo'
   end
 
   def test_get_recent_updates
@@ -229,7 +230,7 @@ class TestSite < Test::Unit::TestCase
     Bunchball::Nitro::Site.expects(:post).with('site.getRecentUpdates', params).returns(return_value)
 
     response = Bunchball::Nitro::Site.get_recent_updates('sum')
-    assert_equal response['Update'], 'foo'
+    assert_equal response.payload['Update'], 'foo'
   end
 
   def test_remove_users_from_group
@@ -243,7 +244,7 @@ class TestSite < Test::Unit::TestCase
     Bunchball::Nitro::Site.expects(:post).with('site.removeUsersFromGroup', params).returns(return_value)
 
     response = Bunchball::Nitro::Site.remove_users_from_group('user1,user2', 'a_group')
-    assert_equal response['GroupUsers'], 'foo'
+    assert_equal response.payload['GroupUsers'], 'foo'
   end
 
 end

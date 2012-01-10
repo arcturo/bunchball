@@ -8,12 +8,12 @@ module Bunchball
 
       def self.get_challenge_progress(group_name, params = {})
         response = post("group.getChallengeProgress", {:groupName => group_name}.merge(params))
-        return response['Nitro']['challenges']
+        Response.new(response, 'challenges')
       end
 
       def self.get_users(group_name, params = {})
         response = post("group.getUsers", {:groupName => group_name}.merge(params))
-        return response['Nitro']['users']
+        Response.new(response, 'users')
       end
 
     end

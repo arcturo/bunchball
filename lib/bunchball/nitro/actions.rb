@@ -35,15 +35,13 @@ module Bunchball
 
       def self.get_error_codes(params = {})
         response = post("server.getErrorCodes", params)
-        response = Response.new(response)
-        response.payload = response.nitro['errorCodeList']
-        response
+        Response.new(response, 'errorCodeList')
       end
 
       # Pings the server
       def self.hello
         response = post("hello")
-        Bunchball::Nitro::Response.new(response)
+        Response.new response
       end
 
       def self.get_tag_id(tag_name)
@@ -54,7 +52,7 @@ module Bunchball
 
       def self.status
         response = post("server.status")
-        Bunchball::Nitro::Response.new(response)
+        Response.new response
       end
 
     end

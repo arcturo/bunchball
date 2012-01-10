@@ -20,7 +20,7 @@ class TestGroup < Test::Unit::TestCase
     Bunchball::Nitro::Group.expects(:post).with("group.getChallengeProgress", params).returns(return_value)
 
     response = Bunchball::Nitro::Group.get_challenge_progress('froggy')
-    assert_equal response['Challenge']['rules'], 'foo'
+    assert_equal response.payload['Challenge']['rules'], 'foo'
   end
 
   def test_get_users
@@ -34,6 +34,6 @@ class TestGroup < Test::Unit::TestCase
     Bunchball::Nitro::Group.expects(:post).with("group.getUsers", params).returns(return_value)
 
     response = Bunchball::Nitro::Group.get_users("froggy")
-    assert_equal "willy@wonka.net", response['User'].first['userId']
+    assert_equal "willy@wonka.net", response.payload['User'].first['userId']
   end
 end

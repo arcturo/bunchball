@@ -6,24 +6,18 @@ module Bunchball
 
       def self.create_action_tag(name, params = {})
         response = post("admin.createActionTag", {:name => name}.merge(params))
-        response = Response.new(response)
-        response.payload = response.nitro['tags'] if response.valid?
-        return response
+        Response.new(response, 'tags')
       end
 
       def self.create_challenge(name, params = {})
         response = post("admin.createChallenge", {:name => name}.merge(params))
-        response = Response.new(response)
-        response.payload = response.nitro['challenges'] if response.valid?
-        return response
+        Response.new(response, 'challenges')
       end
 
       def self.create_rule(rule_type, params = {})
         return nil unless RULE_TYPES.include? rule_type
         response = post("admin.createRule", {:type => rule_type}.merge(params))
-        response = Response.new(response)
-        response.payload = response.nitro['challenges'] if response.valid?
-        return response
+        Response.new(response, 'challenges')
       end
 
       # This method is undocumented in the Bunchball Wiki
@@ -69,9 +63,7 @@ module Bunchball
 
       def self.get_challenges(params = {})
         response = post("admin.getChallenges", params)
-        response = Response.new(response)
-        response.payload = response.nitro['challenges'] if response.valid?
-        return response
+        Response.new(response, 'challenges')
       end
 
       # This method is undocumented in the Bunchball Wiki
@@ -107,9 +99,7 @@ module Bunchball
 
       def self.get_complete_user_record(user_id, params = {})
         response = post("admin.getCompleteUserRecord", {:userId => user_id}.merge(params))
-        response = Response.new(response)
-        response.payload = response.nitro['User']
-        return response
+        Response.new(response, 'User')
       end
 
       # See comments for the sister method export_locale_translations. This
