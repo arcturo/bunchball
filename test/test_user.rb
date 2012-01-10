@@ -93,7 +93,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with('user.createAvatar', params).returns(return_value)
 
     response = Bunchball::Nitro::User.create_avatar('a_user', 'a catalog', 'an instance')
-    assert_equal response['items'], 'foo'
+    assert_equal response.payload['items'], 'foo'
   end
 
   def test_create_avatar_instance
@@ -116,7 +116,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with('user.createCanvas', params).returns(return_value)
 
     response = Bunchball::Nitro::User.create_canvas('a_user', 'a catalog', 'an instance')
-    assert_equal response['items'], 'foo'
+    assert_equal response.payload['items'], 'foo'
   end
 
   def test_create_canvas_instance
@@ -134,7 +134,7 @@ class TestUser < Test::Unit::TestCase
 
     params = {:competitionName => 'A competition', :userIds => 'user1,user2'}
 
-    return_value = {'Nitro' => {'competitions' =>
+    return_value = {'Nitro' => {'res' => 'ok', 'competitions' =>
         {'Competition' => 'foo'}
       }
     }
@@ -142,7 +142,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.createCompetition", params).returns(return_value)
 
     response = Bunchball::Nitro::User.create_competition('user1,user2', 'A competition')
-    assert_equal response['Competition'], 'foo'
+    assert_equal response.payload['Competition'], 'foo'
   end
 
   def test_create_competition_instance
@@ -162,7 +162,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.creditPoints", params).returns(return_value)
 
     response = Bunchball::Nitro::User.credit_points('wiggly', 30)
-    assert_equal response, 'foo'
+    assert_equal response.payload, 'foo'
   end
 
   # Test the instance version of the same method
@@ -184,7 +184,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.debitPoints", params).returns(return_value)
 
     response = Bunchball::Nitro::User.debit_points('wiggly', 30)
-    assert_equal response, 'foo'
+    assert_equal response.payload, 'foo'
   end
 
   # Test the instance version of the same method
@@ -226,7 +226,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.exists", params).returns(return_value)
 
     response = Bunchball::Nitro::User.exists('wiggly')
-    assert_equal response, true
+    assert_equal response.payload, true
   end
 
   def test_exists_instance
@@ -249,7 +249,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.getActionHistory", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_action_history('wiggly')
-    assert_equal response['value'], 'foo'
+    assert_equal response.payload['value'], 'foo'
   end
 
   def test_get_action_history_instance
@@ -273,7 +273,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.getActionTargetValue", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_action_target_value('wiggly', 'a_tag', 'a_target')
-    assert_equal response['value'], 'foo'
+    assert_equal response.payload['value'], 'foo'
   end
 
   def test_get_action_target_value_instance
@@ -297,7 +297,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with('user.getAvatarItems', params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_avatar_items('a_user', 'an instance')
-    assert_equal response['items'], 'foo'
+    assert_equal response.payload['items'], 'foo'
   end
 
   def test_get_avatar_items_instance
@@ -320,7 +320,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with('user.getAvatars', params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_avatars('a_user')
-    assert_equal response['name'], 'foo'
+    assert_equal response.payload['name'], 'foo'
   end
 
   def test_get_avatars_instance
@@ -343,7 +343,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with('user.getCanvasItems', params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_canvas_items('a_user', 'an instance')
-    assert_equal response['items'], 'foo'
+    assert_equal response.payload['items'], 'foo'
   end
 
   def test_get_canvas_items_instance
@@ -366,7 +366,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with('user.getCanvases', params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_canvases('a_user')
-    assert_equal response['name'], 'foo'
+    assert_equal response.payload['name'], 'foo'
   end
 
   def test_get_canvases_instance
@@ -389,7 +389,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.getChallengeProgress", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_challenge_progress('wiggly')
-    assert_equal response['Challenge']['rules'], 'foo'
+    assert_equal response.payload['Challenge']['rules'], 'foo'
   end
 
   def test_get_challenge_progress_instance
@@ -437,7 +437,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.getCompetitionProgress", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_competition_progress('wiggly')
-    assert_equal response['Competition'], 'foo'
+    assert_equal response.payload['Competition'], 'foo'
   end
 
   def test_get_competition_progress_instance
@@ -544,7 +544,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.getGroups", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_groups('wiggly')
-    assert_equal response['Group'], 'foo'
+    assert_equal response.payload['Group'], 'foo'
   end
 
   def test_get_groups_instance
@@ -568,7 +568,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.getLevel", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_level('wiggly,piggly')
-    assert_equal response['User'], 'foo'
+    assert_equal response.payload['User'], 'foo'
   end
 
   def test_get_level_instance
@@ -592,7 +592,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.getNextChallenge", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_next_challenge('wiggly')
-    assert_equal response['Challenge'], 'foo'
+    assert_equal response.payload['Challenge'], 'foo'
   end
 
   def test_get_next_challenge_instance
@@ -616,7 +616,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.getNextLevel", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_next_level('wiggly')
-    assert_equal response['User'], 'foo'
+    assert_equal response.payload['User'], 'foo'
   end
 
   def test_get_next_level_instance
@@ -629,6 +629,33 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_get_owned_items
+    # This one requires one of a pair of item id specifiers be present in params,
+    # so we don't use a positional paramater for it. Just pick one for the test.
+    params = {:userId => 'wiggly'}
+
+    return_value = {'Nitro' => {'res' => 'ok', 'OwnedItemsRecord' =>
+        {'ownedItems' => 'foo'}
+      }
+    }
+
+    Bunchball::Nitro::User.expects(:post).with("user.getOwnedItems", params).returns(return_value)
+
+    response = Bunchball::Nitro::User.get_owned_items('wiggly')
+    assert_equal response.payload['ownedItems'], 'foo'
+  end
+
+  # Test the instance version of the same method
+  def test_get_owned_items_instance
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro::User.expects(:get_owned_items).with(u.user_id, u.session).returns('foo')
+
+    response = u.get_owned_items
+    assert_equal response, 'foo'
+  end
+
   def test_get_pending_notifications
     params = {:userId => 'wiggly'}
 
@@ -637,7 +664,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.getPendingNotifications", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_pending_notifications('wiggly')
-    assert_equal response, 'foo'
+    assert_equal response.payload, 'foo'
   end
 
   def test_get_pending_notifications_instance
@@ -696,7 +723,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.getPointsHistory", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_points_history('wiggly')
-    assert_equal response['PointsHistoryItem'], 'foo'
+    assert_equal response.payload['PointsHistoryItem'], 'foo'
   end
 
   def test_get_points_history_instance
@@ -720,7 +747,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.getPreference", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_preference('wiggly', 'preference_name')
-    assert_equal response['UserPreference'], 'foo'
+    assert_equal response.payload['UserPreference'], 'foo'
   end
 
   def test_get_preference_instance
@@ -744,7 +771,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.getPreferences", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_preferences('wiggly', 'preference1|preference2')
-    assert_equal response['UserPreference'], 'foo'
+    assert_equal response.payload['UserPreference'], 'foo'
   end
 
   def test_get_preferences_instance
@@ -760,6 +787,7 @@ class TestUser < Test::Unit::TestCase
   def test_get_responses
     params = {:userId => 'wiggly'}
 
+    # Yes, truly a bizarre set of return values
     return_value = {'Nitro' => {'res' => 'ok', 'responses' =>
         {'Nitro' => {'Achievements' => 'foo' }}
       }
@@ -768,7 +796,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.getResponses", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_responses('wiggly')
-    assert_equal response['Nitro']['Achievements'], 'foo'
+    assert_equal response.payload['Nitro']['Achievements'], 'foo'
   end
 
   def test_get_responses_instance
@@ -810,7 +838,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.giftItem", params).returns(return_value)
 
     response = Bunchball::Nitro::User.gift_item('wiggly', 'piggly', 'an_item')
-    assert_equal response['Balance'], 'foo'
+    assert_equal response.payload['Balance'], 'foo'
   end
 
   # Test the instance version of the same method
@@ -856,7 +884,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.joinGroup", params).returns(return_value)
 
     response = Bunchball::Nitro::User.join_group('wiggly', 'a_group')
-    assert_equal response['Group'], 'foo'
+    assert_equal response.payload['Group'], 'foo'
   end
 
   def test_join_group_instance
@@ -877,7 +905,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.leaveAllGroups", params).returns(return_value)
 
     response = Bunchball::Nitro::User.leave_all_groups('wiggly')
-    assert_equal response, true  # want actual true here, not just a value that evals as true
+    assert_equal response.payload, true  # want actual true here, not just a value that evals as true
   end
 
   def test_leave_all_groups_instance
@@ -901,7 +929,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.leaveGroup", params).returns(return_value)
 
     response = Bunchball::Nitro::User.leave_group('wiggly', 'a_group')
-    assert_equal response['Group'], 'foo'
+    assert_equal response.payload['Group'], 'foo'
   end
 
   def test_leave_group_instance
@@ -924,7 +952,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.logAction", params).returns(return_value)
 
     response = Bunchball::Nitro::User.log_action('wiggly', 'frog')
-    assert_equal response['Nitro']['res'], 'ok'
+    assert response.valid?
   end
 
   def test_log_action_instance
@@ -956,7 +984,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.modifyUserId", params).returns(return_value)
 
     response = Bunchball::Nitro::User.modify_user_id('wiggly', 'puggly')
-    assert_equal response, true  # want actual true here, not just a value that evals as true
+    assert response.valid?
   end
 
   # Test the instance version of the same method
@@ -967,33 +995,6 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:modify_user_id).with(u.user_id, 'puggly', u.session).returns('foo')
 
     response = u.modify_user_id('puggly')
-    assert_equal response, 'foo'
-  end
-
-  def test_owned_items
-    # This one requires one of a pair of item id specifiers be present in params,
-    # so we don't use a positional paramater for it. Just pick one for the test.
-    params = {:userId => 'wiggly'}
-
-    return_value = {'Nitro' => {'res' => 'ok', 'OwnedItemsRecord' =>
-        {'ownedItems' => 'foo'}
-      }
-    }
-
-    Bunchball::Nitro::User.expects(:post).with("user.getOwnedItems", params).returns(return_value)
-
-    response = Bunchball::Nitro::User.get_owned_items('wiggly')
-    assert_equal response['ownedItems'], 'foo'
-  end
-
-  # Test the instance version of the same method
-  def test_owned_items_instance
-    u = setup_user
-
-    # Mock out the class method with the added params
-    Bunchball::Nitro::User.expects(:get_owned_items).with(u.user_id, u.session).returns('foo')
-
-    response = u.get_owned_items
     assert_equal response, 'foo'
   end
 
@@ -1008,7 +1009,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with('user.placeAvatarItem', params).returns(return_value)
 
     response = Bunchball::Nitro::User.place_avatar_item('a_user', 'an item')
-    assert_equal response['items'], 'foo'
+    assert_equal response.payload['items'], 'foo'
   end
 
   def test_place_avatar_item_instance
@@ -1031,7 +1032,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with('user.placeCanvasItem', params).returns(return_value)
 
     response = Bunchball::Nitro::User.place_canvas_item('a_user', 'an instance', 50, 100, 1)
-    assert_equal response['canvasItems'], 'foo'
+    assert_equal response.payload['canvasItems'], 'foo'
   end
 
   def test_place_canvas_item_instance
@@ -1051,7 +1052,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.purchaseItem", params).returns(return_value)
 
     response = Bunchball::Nitro::User.purchase_item('wiggly', 'an_item')
-    assert_equal response['Balance'], 'foo'
+    assert_equal response.payload['Balance'], 'foo'
   end
 
   # Test the instance version of the same method
@@ -1076,7 +1077,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with('user.removeAvatarItem', params).returns(return_value)
 
     response = Bunchball::Nitro::User.remove_avatar_item('a_user', 'an item')
-    assert_equal response['items'], 'foo'
+    assert_equal response.payload['items'], 'foo'
   end
 
   def test_remove_avatar_item_instance
@@ -1099,7 +1100,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with('user.removeCanvasItem', params).returns(return_value)
 
     response = Bunchball::Nitro::User.remove_canvas_item('a_user', 'an item', 'an instance')
-    assert_equal response['canvasItems'], 'foo'
+    assert_equal response.payload['canvasItems'], 'foo'
   end
 
   def test_remove_canvas_item_instance
@@ -1143,7 +1144,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.removePreference", params).returns(return_value)
 
     response = Bunchball::Nitro::User.remove_preference('wiggly', 'preference_name')
-    assert_equal response['UserPreference'], 'foo'
+    assert_equal response.payload['UserPreference'], 'foo'
   end
 
   def test_remove_preference_instance
@@ -1167,7 +1168,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.resetLevel", params).returns(return_value)
 
     response = Bunchball::Nitro::User.reset_level('wiggly')
-    assert_equal response['User'], 'foo'
+    assert_equal response.payload['User'], 'foo'
   end
 
   def test_reset_level_instance
@@ -1210,7 +1211,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.sellbackItem", params).returns(return_value)
 
     response = Bunchball::Nitro::User.sellback_item('wiggly', :ownedItemId => 'owned_item')
-    assert_equal response['OwnedItemsRecord'], 'foo'
+    assert_equal response.payload['OwnedItemsRecord'], 'foo'
   end
 
   # Test the instance version of the same method
@@ -1235,7 +1236,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with('user.setAvatarColor', params).returns(return_value)
 
     response = Bunchball::Nitro::User.set_avatar_color('a_user', 'an instance', '33ffcc')
-    assert_equal response['items'], 'foo'
+    assert_equal response.payload['items'], 'foo'
   end
 
   def test_set_avatar_color_instance
@@ -1258,7 +1259,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.setLevel", params).returns(return_value)
 
     response = Bunchball::Nitro::User.set_level('wiggly', 'level_name')
-    assert_equal response['User'], 'foo'
+    assert_equal response.payload['User'], 'foo'
   end
 
   def test_set_level_instance
@@ -1282,7 +1283,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.setPreference", params).returns(return_value)
 
     response = Bunchball::Nitro::User.set_preference('wiggly', 'preference_name')
-    assert_equal response['UserPreference'], 'foo'
+    assert_equal response.payload['UserPreference'], 'foo'
   end
 
   def test_set_preference_instance
@@ -1306,7 +1307,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.setPreferences", params).returns(return_value)
 
     response = Bunchball::Nitro::User.set_preferences('wiggly', 'preference1|preference2')
-    assert_equal response['UserPreference'], 'foo'
+    assert_equal response.payload['UserPreference'], 'foo'
   end
 
   def test_set_preferences_instance
@@ -1369,7 +1370,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.storeNotifications", params).returns(return_value)
 
     response = Bunchball::Nitro::User.store_notifications('wiggly,piggly', 'notify1,notify2')
-    assert_equal response, true  # want actual true here, not just a value that evals as true
+    assert response.valid?
   end
 
   def test_store_notifications_instance
@@ -1390,7 +1391,7 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro::User.expects(:post).with("user.transferPoints", params).returns(return_value)
 
     response = Bunchball::Nitro::User.transfer_points('wiggly', 'puggly')
-    assert_equal response, true  # want actual true here, not just a value that evals as true
+    assert response.valid?
   end
 
   # Test the instance version of the same method

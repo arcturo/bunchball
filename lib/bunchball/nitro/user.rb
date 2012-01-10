@@ -23,9 +23,7 @@ module Bunchball
 
       def self.award_challenge(user_id, challenge, params = {})
         response = post("user.awardChallenge", {:userId => user_id, :challenge => challenge}.merge(params))
-        response = Response.new response
-        response.payload = response.nitro['Achievements']
-        return response
+        Response.new(response, 'Achievements')
       end
 
       def award_challenge(challenge, params = {})
@@ -87,7 +85,7 @@ module Bunchball
 
       def self.create_avatar(user_id, catalog, instance, params = {})
         response = post("user.createAvatar", {:userId => user_id, :catalogName => catalog, :instanceName => instance}.merge(params))
-        return response['Nitro']['AvatarRecord'] || response['Nitro']['Error']
+        Response.new(response, 'AvatarRecord')
       end
 
       def create_avatar(catalog, instance, params = {})
@@ -110,7 +108,7 @@ module Bunchball
       # }
       def self.create_canvas(user_id, catalog, instance, params = {})
         response = post("user.createCanvas", {:userId => user_id, :catalogName => catalog, :instanceName => instance}.merge(params))
-        return response['Nitro']['CanvasRecord'] || response['Nitro']['Error']
+        Response.new(response, 'CanvasRecord')
       end
 
       def create_canvas(catalog, instance, params = {})
@@ -119,7 +117,7 @@ module Bunchball
 
       def self.create_competition(user_ids, comp_name, params = {})
         response = post("user.createCompetition", {:competitionName => comp_name, :userIds => user_ids}.merge(params))
-        return response['Nitro']['competitions']
+        Response.new(response, 'competitions')
       end
 
       # Note sure how useful an instance version of this one will be, but still...
@@ -129,7 +127,7 @@ module Bunchball
 
       def self.credit_points(user_id, points, params = {})
         response = post("user.creditPoints", {:userId => user_id, :points => points.to_i}.merge(params))
-        return response['Nitro']['User']
+        Response.new(response, 'User')
       end
 
       def credit_points(points, params = {})
@@ -138,7 +136,7 @@ module Bunchball
 
       def self.debit_points(user_id, points, params = {})
         response = post("user.debitPoints", {:userId => user_id, :points => points.to_i}.merge(params))
-        return response['Nitro']['User']
+        Response.new(response, 'User')
       end
 
       def debit_points(points, params = {})
@@ -157,7 +155,9 @@ module Bunchball
       def self.exists(user_id, params = {})
         params[:storeResponse] = params[:storeResponse].to_s if params[:storeResponse]
         response = post("user.exists", {:userId => user_id}.merge(params))
-        return response["Nitro"]["Exists"] == "true"
+        response = Response.new response
+        response.payload = (response.nitro['Exists'] == "true")
+        response
       end
 
       def exists(user_id, params = {})
@@ -166,13 +166,15 @@ module Bunchball
 
       def self.get_action_history(user_id, params = {})
         response = post("user.getActionHistory", {:userId => user_id}.merge(params))
+        response = Response.new response
 
         # While we figure out what all getActionHistory *might* return, let's just leave a little alert here
-        raise if response['Nitro']['ActionHistoryRecord'].keys.size > 1
+        raise if response.nitro['ActionHistoryRecord'].keys.size > 1
 
         # I think this API call may return multiple ActionHistoryItem arrays,
         # but I'm not certain. So for now, just return the one.
-        return response['Nitro']['ActionHistoryRecord']['ActionHistoryItem']
+        response.payload = response.nitro['ActionHistoryRecord']['ActionHistoryItem']
+        response
       end
 
       # For instance method, just add @user_id and pass it up to the class method.
@@ -183,7 +185,7 @@ module Bunchball
       def self.get_action_target_value(user_id, tag, target, params = {})
         # Let post add the required sessionKey
         response = post("user.getActionTargetValue", {:userId => user_id, :tag => tag, :target => target})
-        return response['Nitro']['targetValue']
+        Response.new(response, 'targetValue')
       end
 
       # For instance method, just add @user_id and pass it up to the class method.
@@ -193,7 +195,7 @@ module Bunchball
 
       def self.get_avatar_items(user_id, instance_name, params = {})
         response = post("user.getAvatarItems", {:userId => user_id, :instanceName => instance_name}.merge(params))
-        return response['Nitro']['AvatarRecord'] || response['Nitro']['Error']
+        Response.new(response, 'AvatarRecord')
       end
 
       def get_avatar_items(instance_name, params = {})
@@ -205,7 +207,7 @@ module Bunchball
         # valid but no avatars: @parsed_response={"Nitro"=>{"res"=>"ok", "method"=>"user.getAvatars",
         # valid with avatars: @parsed_response={"Nitro"=>{"res"=>"ok", "UserCatalogInstance"=>{"name"=>"foo"}, "method"...
         # invalid (presumably): @parsed_response={"Nitro"=>{"res"=>"err", "something..."}}
-        return response['Nitro']['UserCatalogInstance'] || response['Nitro']['Error']
+        Response.new(response, 'UserCatalogInstance')
       end
 
       def get_avatars(params = {})
@@ -214,7 +216,7 @@ module Bunchball
 
       def self.get_canvas_items(user_id, instance_name, params = {})
         response = post("user.getCanvasItems", {:userId => user_id, :instanceName => instance_name}.merge(params))
-        return response['Nitro']['CanvasRecord'] || response['Nitro']['Error']
+        Response.new(response, 'CanvasRecord')
       end
 
       def get_canvas_items(instance_name, params = {})
@@ -226,7 +228,7 @@ module Bunchball
         # valid but no canvases: @parsed_response={"Nitro"=>{"res"=>"ok", "method"=>"user.getCanvases",
         # valid with canvases: @parsed_response={"Nitro"=>{"res"=>"ok", "UserCatalogInstance"=>{"name"=>"foo"}, "method"...
         # invalid (presumably): @parsed_response={"Nitro"=>{"res"=>"err", "something..."}}
-        return response['Nitro']['UserCatalogInstance'] || response['Nitro']['Error']
+        Response.new(response, 'UserCatalogInstance')
       end
 
       def get_canvases(params = {})
@@ -235,7 +237,7 @@ module Bunchball
 
       def self.get_challenge_progress(user_id, params = {})
         response = post("user.getChallengeProgress", {:userId => user_id}.merge(params))
-        return response['Nitro']['challenges']
+        Response.new(response, 'challenges')
       end
 
       def get_challenge_progress(params = {})
@@ -244,9 +246,7 @@ module Bunchball
 
       def self.get_comments(user_id, params = {})
         response = post("user.getComments", {:userId => user_id}.merge(params))
-        response = Response.new(response)
-        response.payload = response.nitro['UserComments']
-        return response
+        Response.new(response, 'UserComments')
       end
 
       def get_comments(params = {})
@@ -255,7 +255,7 @@ module Bunchball
 
       def self.get_competition_progress(user_id, params = {})
         response = post("user.getCompetitionProgress", {:userId => user_id}.merge(params))
-        return response['Nitro']['competitions']
+        Response.new(response, 'competitions')
       end
 
       def get_competition_progress(params = {})
@@ -272,10 +272,10 @@ module Bunchball
       end
 
       def self.get_friends(user_id, friend_type, params = {})
-        res = post("user.getFriends", {:userId => user_id, :friendType => friend_type}.merge(params))
-        response = Response.new(res)
-        if res['Nitro']['users']
-          response.payload = res['Nitro']['users']['User'] rescue []
+        response = post("user.getFriends", {:userId => user_id, :friendType => friend_type}.merge(params))
+        response = Response.new(response)
+        if response.nitro['users']
+          response.payload = response.nitro['users']['User'] rescue []
         end
         return response
       end
@@ -300,7 +300,7 @@ module Bunchball
 
       def self.get_groups(user_id, params = {})
         response = post("user.getGroups", {:userId => user_id}.merge(params))
-        return response['Nitro']['userGroups']
+        Response.new(response, 'userGroups')
       end
 
       def get_groups(params = {})
@@ -309,7 +309,7 @@ module Bunchball
 
       def self.get_level(user_ids, params = {})
         response = post("user.getLevel", {:userIds => user_ids}.merge(params))
-        return response['Nitro']['users']
+        Response.new(response, 'users')
       end
 
       def get_level(params = {})
@@ -318,7 +318,7 @@ module Bunchball
 
       def self.get_next_level(user_id, params = {})
         response = post("user.getNextLevel", {:userId => user_id}.merge(params))
-        return response['Nitro']['users']
+        Response.new(response, 'users')
       end
 
       def get_next_level(params = {})
@@ -327,7 +327,7 @@ module Bunchball
 
       def self.get_next_challenge(user_id, params = {})
         response = post("user.getNextChallenge", {:userId => user_id}.merge(params))
-        return response['Nitro']['challenges']
+        Response.new(response, 'challenges')
       end
 
       def get_next_challenge(params = {})
@@ -336,7 +336,7 @@ module Bunchball
 
       def self.get_owned_items(user_id, params = {})
         response = post("user.getOwnedItems", {:userId => user_id}.merge(params))
-        return response['Nitro']['OwnedItemsRecord']
+        Response.new(response, 'OwnedItemsRecord')
       end
 
       def get_owned_items(params = {})
@@ -346,7 +346,7 @@ module Bunchball
       def self.get_pending_notifications(user_id, params = {})
         response = post("user.getPendingNotifications", {:userId => user_id}.merge(params))
         # Two top-level keys here need returning, so we'll just return the whole thing.
-        return response['Nitro']
+        Response.new response
       end
 
       def get_pending_notifications(params = {})
@@ -366,7 +366,7 @@ module Bunchball
 
       def self.get_points_history(user_id, params = {})
         response = post("user.getPointsHistory", {:userId => user_id}.merge(params))
-        return response['Nitro']['PointsHistoryRecord']
+        Response.new(response, 'PointsHistoryRecord')
       end
 
       def get_points_history(params = {})
@@ -375,7 +375,7 @@ module Bunchball
 
       def self.get_preference(user_id, name, params = {})
         response = post("user.getPreference", {:userId => user_id, :name => name}.merge(params))
-        return response['Nitro']['userPreferences']
+        Response.new(response, 'userPreferences')
       end
 
       def get_preference(name, params = {})
@@ -384,7 +384,7 @@ module Bunchball
 
       def self.get_preferences(user_id, names, params = {})
         response = post("user.getPreferences", {:userId => user_id, :names => names}.merge(params))
-        return response['Nitro']['userPreferences']
+        Response.new(response, 'userPreferences')
       end
 
       def get_preferences(names, params = {})
@@ -393,7 +393,7 @@ module Bunchball
 
       def self.get_responses(user_id, params = {})
         response = post("user.getResponses", {:userId => user_id}.merge(params))
-        return response['Nitro']['responses']
+        Response.new(response, 'responses')
       end
 
       def get_responses(params = {})
@@ -402,7 +402,7 @@ module Bunchball
 
       def self.get_social_status(user_id, params = {})
         response = post("user.getSocialStatus", {:userId => user_id}.merge(params))
-        return Response.new response
+        Response.new response
       end
 
       def get_social_status(params = {})
@@ -411,7 +411,7 @@ module Bunchball
 
       def self.gift_item(user_id, recipient_id, item_id, params = {})
         response = post("user.giftItem", {:userId => user_id, :recipientId => recipient_id, :itemId => item_id}.merge(params))
-        return response['Nitro']
+        Response.new response
       end
 
       def gift_item(recipient_id, item_id, params = {})
@@ -420,7 +420,7 @@ module Bunchball
 
       def self.invite_friend(user_id, friend_id, params = {})
         response = post("user.inviteFriend", {:userId => user_id, :friendId => friend_id}.merge(params))
-        return Response.new(response)
+        Response.new response
       end
 
       def invite_friend(friend_id, params = {})
@@ -433,7 +433,7 @@ module Bunchball
       # logged-in user, which makes sense, so I'm going to treat it like that.
       def self.join_group(user_id, group_name, params = {})
         response = post("user.joinGroup", {:userId => user_id, :groupName => group_name}.merge(params))
-        return response['Nitro']['userGroups']
+        Response.new(response, 'userGroups')
       end
 
       def join_group(group_name, params = {})
@@ -442,7 +442,7 @@ module Bunchball
 
       def self.leave_all_groups(user_id, params = {})
         response = post("user.leaveAllGroups", {:userId => user_id}.merge(params))
-        return response['Nitro']['userGroups']
+        Response.new(response, 'userGroups')
       end
 
       def leave_all_groups(params = {})
@@ -451,7 +451,7 @@ module Bunchball
 
       def self.leave_group(user_id, group_name, params = {})
         response = post("user.leaveGroup", {:userId => user_id, :groupName => group_name}.merge(params))
-        return response['Nitro']['userGroups']
+        Response.new(response, 'userGroups')
       end
 
       def leave_group(group_name, params = {})
@@ -461,7 +461,8 @@ module Bunchball
       def self.log_action(user_id, tags, params = {})
         params[:storeResponse] = params[:storeResponse].to_s if params[:storeResponse]
 
-        post("user.logAction", {:tags => tags, :userId => user_id}.merge(params))
+        response = post("user.logAction", {:tags => tags, :userId => user_id}.merge(params))
+        Response.new response
       end
 
       def log_action(tags, params = {})
@@ -478,7 +479,7 @@ module Bunchball
 
       def self.modify_user_id(old_user_id, new_user_id, params = {})
         response = post("user.modifyUserId", {:oldUserId => old_user_id, :newUserId => new_user_id}.merge(params))
-        return response["Nitro"]["res"] == "ok"
+        Response.new response
       end
 
       def modify_user_id(new_user_id, params = {})
@@ -497,7 +498,7 @@ module Bunchball
       # So for now we're treating it as if it's NOT required. (TODO)
       def self.place_avatar_item(user_id, item_id, params = {})
         response = post("user.placeAvatarItem", {:userId => user_id, :itemId => item_id}.merge(params))
-        return response['Nitro']['AvatarRecord'] || response['Nitro']['Error']
+        Response.new(response, 'AvatarRecord')
       end
 
       def place_avatar_item(item_id, params = {})
@@ -506,7 +507,7 @@ module Bunchball
 
       def self.place_canvas_item(user_id, instance, x, y, z_order, params = {})
         response = post("user.placeCanvasItem", {:userId => user_id, :instanceName => instance, :x => x, :y => y, :zOrder => z_order}.merge(params))
-        return response['Nitro']['CanvasRecord'] || response['Nitro']['Error']
+        Response.new(response, 'CanvasRecord')
       end
 
       # TODO : Need to test this against a real canvas and make sure that the return values are correct
@@ -516,7 +517,7 @@ module Bunchball
 
       def self.purchase_item(user_id, item_id, params = {})
         response = post("user.purchaseItem", {:userId => user_id, :itemId => item_id}.merge(params))
-        return response['Nitro']
+        Response.new response
       end
 
       def purchase_item(item_id, params = {})
@@ -525,7 +526,7 @@ module Bunchball
 
       def self.remove_avatar_item(user_id, item_id, params = {})
         response = post("user.removeAvatarItem", {:userId => user_id, :itemId => item_id}.merge(params))
-        return response['Nitro']['AvatarRecord'] || response['Nitro']['Error']
+        Response.new(response, 'AvatarRecord')
       end
 
       def remove_avatar_item(item_id, params = {})
@@ -534,7 +535,7 @@ module Bunchball
 
       def self.remove_canvas_item(user_id, item_id, instance, params = {})
         response = post("user.removeCanvasItem", {:userId => user_id, :instanceName => instance, :canvasItemId => item_id}.merge(params))
-        return response['Nitro']['CanvasRecord'] || response['Nitro']['Error']
+        Response.new(response, 'CanvasRecord')
       end
 
       def remove_canvas_item(item_id, instance, params = {})
@@ -550,7 +551,7 @@ module Bunchball
       # remove a "friend" that doesn't exist, or is not in a friend state with user_id.
       def self.remove_friend(user_id, friend_id, params = {})
         response = post("user.removeFriend", {:userId => user_id, :friendId => friend_id}.merge(params))
-        return Response.new(response)
+        Response.new(response)
       end
 
       def remove_friend(friend_id, params = {})
@@ -559,7 +560,7 @@ module Bunchball
 
       def self.remove_preference(user_id, name, params = {})
         response = post("user.removePreference", {:userId => user_id, :name => name}.merge(params))
-        return response['Nitro']['userPreferences']
+        Response.new(response, 'userPreferences')
       end
 
       def remove_preference(name, params = {})
@@ -568,7 +569,7 @@ module Bunchball
 
       def self.reset_level(user_id, params = {})
         response = post("user.resetLevel", {:userId => user_id}.merge(params))
-        return response['Nitro']['users']
+        Response.new(response, 'users')
       end
 
       def reset_level(params = {})
@@ -577,7 +578,7 @@ module Bunchball
 
       def self.save_comment(user_id, recipient_id, value, params = {})
         response = post("user.saveComment", {:userId => user_id, :recipientId => recipient_id, :value => value}.merge(params))
-        Response.new(response)
+        Response.new response
       end
 
       def save_comment(recipient_id, value, params = {})
@@ -589,7 +590,7 @@ module Bunchball
       # positional param for the required items.
       def self.sellback_item(user_id, params = {})
         response = post("user.sellbackItem", {:userId => user_id}.merge(params))
-        return response['Nitro']
+        Response.new response
       end
 
       def sellback_item(params = {})
@@ -598,7 +599,7 @@ module Bunchball
 
       def self.set_avatar_color(user_id, instance, color, params = {})
         response = post("user.setAvatarColor", {:userId => user_id, :instanceName => instance, :skinColor => color}.merge(params))
-        return response['Nitro']['AvatarRecord'] || response['Nitro']['Error']
+        Response.new(response, 'AvatarRecord')
       end
 
       def set_avatar_color(instance, color, params = {})
@@ -607,7 +608,7 @@ module Bunchball
 
       def self.set_level(user_id, level_name, params = {})
         response = post("user.setLevel", {:userId => user_id, :levelName => level_name}.merge(params))
-        return response['Nitro']['users']
+        Response.new(response, 'users')
       end
 
       def set_level(level_name, params = {})
@@ -616,7 +617,7 @@ module Bunchball
 
       def self.set_preference(user_id, name, params = {})
         response = post("user.setPreference", {:userId => user_id, :name => name}.merge(params))
-        return response['Nitro']['userPreferences']
+        Response.new(response, 'userPreferences')
       end
 
       def set_preference(name, params = {})
@@ -625,7 +626,7 @@ module Bunchball
 
       def self.set_preferences(user_id, names, params = {})
         response = post("user.setPreferences", {:userId => user_id, :names => names}.merge(params))
-        return response['Nitro']['userPreferences']
+        Response.new(response, 'userPreferences')
       end
 
       def set_preferences(names, params = {})
@@ -643,7 +644,7 @@ module Bunchball
       # some other way to establish Twitter credentials in the app.
       def self.set_social_status(user_id, facebook_id, params = {})
         response = post("user.setSocialStatus", {:userId => user_id, :facebookId => facebook_id}.merge(params))
-        return Response.new response
+        Response.new response
       end
 
       def set_social_status(facebook_id, params = {})
@@ -661,25 +662,17 @@ module Bunchball
 
       def self.store_notifications(user_ids, notification_names, params = {})
         response = post("user.storeNotifications", {:userIds => user_ids, :notificationNames => notification_names}.merge(params))
-        if (response['Nitro']['res'] == 'ok')
-          return true
-        else
-          return response['Nitro']['Error']
-        end
+        Response.new response
       end
 
       def store_notifications(notification_names, params = {})
         response = User.store_notifications(@user_id, notification_names, session.merge(params))
       end
 
-      def set_level(level_name, params = {})
-        response = User.set_level(@user_id, level_name, session.merge(params))
-      end
-
       def self.transfer_points(src_user_id, dest_user_id, params = {})
         params[:storeResponse] = params[:storeResponse].to_s if params[:storeResponse]
         response = post("user.transferPoints", {:srcUserId => src_user_id, :destUserId => dest_user_id}.merge(params))
-        return response["Nitro"]["res"] == "ok"
+        Response.new response
       end
 
       def transfer_points(dest_user_id, params = {})

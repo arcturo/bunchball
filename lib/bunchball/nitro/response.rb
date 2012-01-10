@@ -1,30 +1,39 @@
-# This class encapsulates and partly interprets the response we receive
-# from the Bunchball API when we make calls to it. This allows us to
-# wrap some syntactic sugar around (.valid?, .payload, etc.) while still
+# This class encapsulates and partly interprets the response from the
+# Bunchball API when we call it. This allows us to encase the results
+# in some syntactic sugar (.valid?, .payload, etc.) while still
 # returning a single, uniform object from all API wrapper calls.
 #
 # The app developer will always receive a Response object back from the
-# API call, whether it was valid or invalid, succeeded or failed. In
-# theory. :)  From that point, in cases (like User.get_points_balance)
-# where it's clear what value is most likely being sought, this value
-# will be available as .payload.  The raw response will be stored in
-# @api_response.
+# API call, whether that call succeeded or failed. In theory. :)  From
+# that point, in cases (like User.get_points_balance) where it's clear
+# what value is most likely being sought, this value will be available
+# as .payload.  The raw response will be stored in @api_response.
 
 class Bunchball::Nitro::Response
   attr_accessor :api_response, :payload
 
-  def initialize(response)
+  def initialize(response, default_nitro_key = nil)
     @api_response = response
-    # Default payload unless we get an explicit value set
-    @payload = self.nitro
+    if default_nitro_key
+      @payload = self.nitro[default_nitro_key]
+    else
+      # Default payload unless we get an explicit value set
+      @payload = self.nitro
+    end
   end
 
   def errors
     # There should not BE an 'Error' key on a valid API call response, but if
-    # there is, we sure don't want to return it as if there were.
+    # there is, we sure don't want to return it as if the call was invalid.
     # TODO: Should this return nil or []?
     return [] if self.valid?
     nitro['Error'] rescue []
+  end
+
+  # This one's not always present, but will show up in methods like batch.run
+  # (speaking of which, TODO).
+  def invoked_method
+    nitro['invokedMethod']
   end
 
   def method
