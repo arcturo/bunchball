@@ -382,14 +382,15 @@ class TestUser < Test::Unit::TestCase
     params = {:userId => 'wiggly'}
 
     return_value = {'Nitro' => {'res' => 'ok', 'challenges' =>
-        {'Challenge' => {'completionCount' => '1', 'rules' => 'foo' }}
+        {'Challenge' => {'name' => 'A challenge', 'rules' => {'Rule' => 'foo' }}}
       }
     }
 
     Bunchball::Nitro::User.expects(:post).with("user.getChallengeProgress", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_challenge_progress('wiggly')
-    assert_equal response.payload['Challenge']['rules'], 'foo'
+    assert response.payload.first.is_a? Bunchball::Nitro::Challenge
+    assert_equal response.payload.first.rules, ['foo']
   end
 
   def test_get_challenge_progress_instance
@@ -585,14 +586,15 @@ class TestUser < Test::Unit::TestCase
     params = {:userId => 'wiggly'}
 
     return_value = {'Nitro' => {'res' => 'ok', 'challenges' =>
-        {'Challenge' => 'foo'}
+        {'Challenge' => {'name' => 'A challenge', 'rules' => {'Rule' => 'foo' }}}
       }
     }
 
     Bunchball::Nitro::User.expects(:post).with("user.getNextChallenge", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_next_challenge('wiggly')
-    assert_equal response.payload['Challenge'], 'foo'
+    assert response.payload.is_a? Bunchball::Nitro::Challenge
+    assert_equal response.payload.name, 'A challenge'
   end
 
   def test_get_next_challenge_instance

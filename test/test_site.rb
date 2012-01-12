@@ -206,14 +206,15 @@ class TestSite < Test::Unit::TestCase
     params = {:sessionKey => '1234'}
 
     return_value = {'Nitro' => {'res' => 'ok', 'challenges' =>
-        {'Challenge' => 'foo'}
+        {'Challenge' => {'name' => 'A challenge', 'rules' => {'Rule' => 'foo' } }}
       }
     }
 
     Bunchball::Nitro::Site.expects(:post).with('site.getRecentChallenges', params).returns(return_value)
 
     response = Bunchball::Nitro::Site.get_recent_challenges
-    assert_equal response.payload['Challenge'], 'foo'
+    assert response.payload.first.is_a? Bunchball::Nitro::Challenge
+    assert_equal response.payload.first.rules, ['foo']
   end
 
   def test_get_recent_updates

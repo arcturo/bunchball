@@ -77,7 +77,13 @@ module Bunchball
 
       def self.get_recent_challenges(params = {})
         response = post("site.getRecentChallenges", self.session.merge(params))
-        Response.new(response, 'challenges')
+        response = Response.new(response, 'challenges')
+        challenges = []
+        [response.payload['Challenge']].compact.each do |challenge|
+          challenges << Challenge.new(challenge)
+        end
+        response.payload = challenges
+        response
       end
 
       def self.get_recent_updates(criteria, params = {})

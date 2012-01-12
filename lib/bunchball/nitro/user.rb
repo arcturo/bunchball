@@ -237,7 +237,13 @@ module Bunchball
 
       def self.get_challenge_progress(user_id, params = {})
         response = post("user.getChallengeProgress", {:userId => user_id}.merge(params))
-        Response.new(response, 'challenges')
+        response = Response.new(response, 'challenges')
+        challenges = []
+        [response.payload['Challenge']].compact.each do |challenge|
+          challenges << Challenge.new(challenge)
+        end
+        response.payload = challenges
+        response
       end
 
       def get_challenge_progress(params = {})
@@ -327,7 +333,11 @@ module Bunchball
 
       def self.get_next_challenge(user_id, params = {})
         response = post("user.getNextChallenge", {:userId => user_id}.merge(params))
-        Response.new(response, 'challenges')
+        response = Response.new(response, 'challenges')
+        if response.valid?
+          response.payload = Challenge.new(response.payload['Challenge'])
+        end
+        response
       end
 
       def get_next_challenge(params = {})

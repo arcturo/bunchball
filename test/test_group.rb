@@ -13,14 +13,15 @@ class TestGroup < Test::Unit::TestCase
     params = {:groupName => 'froggy'}
 
     return_value = {'Nitro' => {'res' => 'ok', 'challenges' =>
-        {'Challenge' => {'completionCount' => '1', 'rules' => 'foo' }}
+        {'Challenge' => {'completionCount' => '1', 'rules' => {'Rule' => 'foo' } }}
       }
     }
 
     Bunchball::Nitro::Group.expects(:post).with("group.getChallengeProgress", params).returns(return_value)
 
     response = Bunchball::Nitro::Group.get_challenge_progress('froggy')
-    assert_equal response.payload['Challenge']['rules'], 'foo'
+    assert response.payload.first.is_a? Bunchball::Nitro::Challenge
+    assert_equal response.payload.first.rules, ['foo']
   end
 
   def test_get_users
