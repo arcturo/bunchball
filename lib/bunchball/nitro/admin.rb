@@ -11,7 +11,11 @@ module Bunchball
 
       def self.create_challenge(name, params = {})
         response = post("admin.createChallenge", {:name => name}.merge(params))
-        Response.new(response, 'challenges')
+        response = Response.new(response, 'challenges')
+        if response.valid?
+          response.payload = Challenge.new(response.payload['Challenge'])
+        end
+        response
       end
 
       def self.create_rule(rule_type, params = {})

@@ -32,7 +32,7 @@ class TestAdmin < Test::Unit::TestCase
             'pointAward' => '80', 'rules' => true, 'order' => '0', 'id' => '3988448', 'ruleMatchType' => '0',
             'dateIssued' => '1325219909', 'tags' => '', 'dailyAchievementLimit' => '0', 'callbackFlag' => '0',
             'startTime' => '1325219909', 'endTime' => '0', 'serviceType' => '1', 'pointCategoryId' => '283426',
-            'applyMultiplier' => '0', 'repeatable' => '0', 'hideUntilEarned' => '0'
+            'applyMultiplier' => '0', 'repeatable' => '0', 'hideUntilEarned' => '0', 'rules' => {'Rule' => 'foo' }
           }
         }
       }
@@ -41,8 +41,9 @@ class TestAdmin < Test::Unit::TestCase
     Bunchball::Nitro::Admin.expects(:post).with('admin.createChallenge', params).returns(return_value)
 
     response = Bunchball::Nitro::Admin.create_challenge('twinkle', :pointAward => 80, :activeFlag => 1)
-    assert_equal 'twinkle', response.payload['Challenge']['name']
-    assert_equal '80', response.payload['Challenge']['pointAward']
+    assert response.payload.is_a? Bunchball::Nitro::Challenge
+    assert_equal response.payload.name, 'twinkle'
+    assert_equal response.payload.point_award, 80
   end
 
   def test_create_rule
