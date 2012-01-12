@@ -239,7 +239,7 @@ module Bunchball
         response = post("user.getChallengeProgress", {:userId => user_id}.merge(params))
         response = Response.new(response, 'challenges')
         challenges = []
-        [response.payload['Challenge']].compact.each do |challenge|
+        [response.payload['Challenge']].flatten.compact.each do |challenge|
           challenges << Challenge.new(challenge)
         end
         response.payload = challenges
