@@ -78,6 +78,11 @@ class TestChallenge < Test::Unit::TestCase
     assert challenge.has_trophy?
   end
 
+  def test_point_award
+    challenge = make_challenge(sample_api_response.merge('pointAward' => '75'))
+    assert_equal challenge.point_award, 75
+  end
+
   def test_rules
     challenge = make_challenge(sample_api_response)
     assert challenge.rules.is_a? Array

@@ -22,6 +22,10 @@ class Bunchball::Nitro::Challenge
     @api_response['name']
   end
 
+  def point_award
+    @api_response['pointAward'].to_i
+  end
+
   # Make sure we return an enumerable for the rules applying to this challenge,
   # even if there are none.
   #
