@@ -1,25 +1,17 @@
 class Bunchball::Nitro::Challenge
   attr_accessor :api_response
 
-  def initialize(response)
+  def initialize(response = {})
     @api_response = response
   end
 
   # Uncompleted challenges don't get a dateCompleted field at all from the API
   def completed?
-    @api_response['dateCompleted']
+    !! @api_response['dateCompleted']
   end
 
   def date_completed
     Time.at(@api_response['dateCompleted'].to_i) if self.completed?
-  end
-
-  def errors
-    # There should not BE an 'Error' key on a valid API call response, but if
-    # there is, we sure don't want to return it as if the call was invalid.
-    # TODO: Should this return nil or []?
-    return [] if self.valid?
-    nitro['Error'] rescue []
   end
 
   def has_trophy?
@@ -38,18 +30,18 @@ class Bunchball::Nitro::Challenge
     @api_response['rules'] ? Array(@api_response['rules']['Rule']) : []
   end
 
-  def full_url
+  def trophy_url
     @api_response['fullUrl']
   end
   # We really want to call it like this, but for least-surprise, we'll also have
   # the more closely-matches-the-API name
-  alias trophy_url full_url
+  alias full_url trophy_url
 
-  def thumb_url
+  def trophy_thumb_url
     @api_response['thumbUrl']
   end
   # We really want to call it like this, but for least-surprise, we'll also have
   # the more closely-matches-the-API name
-  alias trophy_thumb_url thumb_url
+  alias thumb_url trophy_thumb_url
 
 end
