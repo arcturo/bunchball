@@ -63,7 +63,13 @@ module Bunchball
 
       def self.get_challenges(params = {})
         response = post("admin.getChallenges", params)
-        Response.new(response, 'challenges')
+        response = Response.new(response, 'challenges')
+        challenges = []
+        [response.payload['Challenge']].compact.each do |challenge|
+          challenges << Challenge.new(challenge)
+        end
+        response.payload = challenges
+        response
       end
 
       # This method is undocumented in the Bunchball Wiki
