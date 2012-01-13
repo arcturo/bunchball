@@ -5,6 +5,25 @@ class Bunchball::Nitro::Challenge
     @api_response = response
   end
 
+  def active?
+    active_state = true   # Default state if no start/end time is specified
+    if start_time
+      active_state = active_state && (Time.now > start_time)
+    end
+    if end_time
+      active_state = active_state && (Time.now < end_time)
+    end
+    active_state
+  end
+
+  def start_time
+    Time.at(@api_response['startTime'].to_i) if @api_response['startTime']
+  end
+
+  def end_time
+    Time.at(@api_response['endTime'].to_i) if @api_response['endTime']
+  end
+
   # Uncompleted challenges don't get a dateCompleted field at all from the API
   def completed?
     !! @api_response['dateCompleted']

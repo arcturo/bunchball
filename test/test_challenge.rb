@@ -43,14 +43,29 @@ class TestChallenge < Test::Unit::TestCase
     Bunchball::Nitro::Challenge.new(api_response)
   end
 
+  def test_active?
+    challenge = make_challenge(sample_api_response.merge('startTime' => Time.now.to_i - 3600,
+                                                         'endTime' => Time.now.to_i + 3600))
+    assert challenge.active?
+  end
+
+  def test_active_after_end
+    challenge = make_challenge(sample_api_response.merge('startTime' => Time.now.to_i - 3600,
+                                                         'endTime' => Time.now.to_i - 100))
+
+    assert ! challenge.active?
+  end
+
+  def test_active_before_start
+    challenge = make_challenge(sample_api_response.merge('startTime' => Time.now.to_i + 3600,
+                                                         'endTime' => Time.now.to_i + 7200))
+
+    assert ! challenge.active?
+  end
+
   def test_initialize
     challenge = make_challenge
     assert_equal challenge.class, Bunchball::Nitro::Challenge
-  end
-
-  def test_name
-    challenge = make_challenge(sample_api_response.merge('name' => 'foo'))
-    assert_equal challenge.name, 'foo'
   end
 
   def test_completed?
@@ -78,6 +93,11 @@ class TestChallenge < Test::Unit::TestCase
     assert challenge.has_trophy?
   end
 
+  def test_name
+    challenge = make_challenge(sample_api_response.merge('name' => 'foo'))
+    assert_equal challenge.name, 'foo'
+  end
+
   def test_point_award
     challenge = make_challenge(sample_api_response.merge('pointAward' => '75'))
     assert_equal challenge.point_award, 75
@@ -86,6 +106,18 @@ class TestChallenge < Test::Unit::TestCase
   def test_rules
     challenge = make_challenge(sample_api_response)
     assert challenge.rules.is_a? Array
+  end
+
+  def test_start_time
+    challenge = make_challenge(sample_api_response.merge('startTime' => Time.now.to_i - 300))
+    assert_equal challenge.start_time.class, Time
+    assert_equal challenge.start_time, Time.at((Time.now.to_i - 300))
+  end
+
+  def test_end_time
+    challenge = make_challenge(sample_api_response.merge('endTime' => Time.now.to_i + 300))
+    assert_equal challenge.end_time.class, Time
+    assert_equal challenge.end_time.class, Time
   end
 
   def test_trophy_url
