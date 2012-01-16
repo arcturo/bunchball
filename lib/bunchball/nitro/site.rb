@@ -59,7 +59,11 @@ module Bunchball
       def self.get_levels(params = {})
         response = post("site.getLevels", params)
         response = Response.new response
-        response.payload = response.nitro['siteLevels']['SiteLevel']
+        levels = []
+        [response.nitro['siteLevels']['SiteLevel']].flatten.compact.each do |level|
+          levels << Level.new(level)
+        end
+        response.payload = levels
         response
       end
 
