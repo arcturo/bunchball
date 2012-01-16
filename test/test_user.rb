@@ -564,7 +564,7 @@ class TestUser < Test::Unit::TestCase
     params = {:userIds => 'wiggly,piggly'}
 
     return_value = {'Nitro' => {'res' => 'ok', 'users' =>
-        {'User' => {'userId' => 'foo' }}
+        {'User' => {'userId' => 'foo', 'SiteLevel' => {'name' => 'A Level', 'points' => 3000} }}
       }
     }
 
@@ -616,20 +616,19 @@ class TestUser < Test::Unit::TestCase
     params = {:userId => 'wiggly'}
 
     return_value = {'Nitro' => {'res' => 'ok', 'users' =>
-        {'User' => 'foo' }
+        {'User' => {'userId' => 'wiggly', 'SiteLevel' => {'name' => 'A Level', 'points' => 3000} }}
       }
     }
 
     Bunchball::Nitro::User.expects(:post).with("user.getNextLevel", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_next_level('wiggly')
-    assert_equal response.payload['User'], 'foo'
+    assert_equal response.payload.name, 'A Level'
   end
 
   def test_get_next_level_instance
     u = setup_user
 
-    # Mock out the class method with the added params
     Bunchball::Nitro::User.expects(:get_next_level).with('wibble', :sessionKey => 'a_session_key').returns('foo')
 
     response = u.get_next_level

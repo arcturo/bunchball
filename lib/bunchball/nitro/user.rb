@@ -337,7 +337,9 @@ module Bunchball
 
       def self.get_next_level(user_id, params = {})
         response = post("user.getNextLevel", {:userId => user_id}.merge(params))
-        Response.new(response, 'users')
+        response = Response.new(response, 'users')
+        response.payload = Level.new(response.payload['User']['SiteLevel'])
+        response
       end
 
       def get_next_level(params = {})
