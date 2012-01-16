@@ -1,14 +1,18 @@
 module Bunchball
   module Nitro
     class User < ApiBase
-      attr_accessor :session_key, :user_id
+      attr_accessor :level, :session_key, :user_id
 
       def initialize(user_id)
         @user_id = user_id
+      end
+
+      def login
         @session_key = Bunchball::Nitro.authenticate(user_id)
       end
 
       def session
+        login unless @session_key
         {:sessionKey => @session_key}
       end
 
@@ -315,11 +319,20 @@ module Bunchball
 
       def self.get_level(user_ids, params = {})
         response = post("user.getLevel", {:userIds => user_ids}.merge(params))
-        Response.new(response, 'users')
+        response = Response.new(response, 'users')
+        payload = []
+        [response.payload['User']].flatten.compact.each do |user|
+          user['level'] = Level.new(user['SiteLevel'])
+          payload << user
+        end
+        response.payload = payload
+        response
       end
 
       def get_level(params = {})
         response = User.get_level(@user_id, session.merge(params))
+        response.payload = response.payload.first['level']
+        response
       end
 
       def self.get_next_level(user_id, params = {})

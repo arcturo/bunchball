@@ -9,6 +9,8 @@ class TestUser < Test::Unit::TestCase
     Bunchball::Nitro.expects(:authenticate).with(user_id).returns(return_val)
 
     u = Bunchball::Nitro::User.new(user_id)
+    u.login
+    u
   end
 
   def test_initialize
@@ -562,24 +564,27 @@ class TestUser < Test::Unit::TestCase
     params = {:userIds => 'wiggly,piggly'}
 
     return_value = {'Nitro' => {'res' => 'ok', 'users' =>
-        {'User' => 'foo' }
+        {'User' => {'userId' => 'foo' }}
       }
     }
 
     Bunchball::Nitro::User.expects(:post).with("user.getLevel", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_level('wiggly,piggly')
-    assert_equal response.payload['User'], 'foo'
+    assert_equal response.payload.first['userId'], 'foo'
   end
 
   def test_get_level_instance
     u = setup_user
 
     # Mock out the class method with the added params
-    Bunchball::Nitro::User.expects(:get_level).with('wibble', :sessionKey => 'a_session_key').returns('foo')
+    # We are soooooo cheating here.
+    r = Bunchball::Nitro::Response.new('')
+    r.payload = [{'level' => 'foo'}]
+    Bunchball::Nitro::User.expects(:get_level).with('wibble', :sessionKey => 'a_session_key').returns(r)
 
     response = u.get_level
-    assert_equal response, 'foo'
+    assert_equal response.payload, 'foo'
   end
 
   def test_get_next_challenge
