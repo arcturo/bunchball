@@ -21,7 +21,11 @@ module Bunchball
       def self.create_rule(rule_type, params = {})
         return nil unless RULE_TYPES.include? rule_type
         response = post("admin.createRule", {:type => rule_type}.merge(params))
-        Response.new(response, 'challenges')
+        response = Response.new(response, 'challenges')
+        if response.valid?
+          response.payload = Challenge.new(response.payload['Challenge'])
+        end
+        response
       end
 
       # This method is undocumented in the Bunchball Wiki

@@ -12,6 +12,7 @@ require 'bunchball/nitro/challenge'
 require 'bunchball/nitro/group'
 require 'bunchball/nitro/level'
 require 'bunchball/nitro/response'
+require 'bunchball/nitro/rule'
 require 'bunchball/nitro/site'
 require 'bunchball/nitro/user'
 

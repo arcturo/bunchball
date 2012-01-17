@@ -384,7 +384,7 @@ class TestUser < Test::Unit::TestCase
     params = {:userId => 'wiggly'}
 
     return_value = {'Nitro' => {'res' => 'ok', 'challenges' =>
-        {'Challenge' => {'name' => 'A challenge', 'rules' => {'Rule' => 'foo' }}}
+        {'Challenge' => {'name' => 'A challenge', 'rules' => {'Rule' => {'goal' => '37' }}}}
       }
     }
 
@@ -392,7 +392,7 @@ class TestUser < Test::Unit::TestCase
 
     response = Bunchball::Nitro::User.get_challenge_progress('wiggly')
     assert response.payload.first.is_a? Bunchball::Nitro::Challenge
-    assert_equal response.payload.first.rules, ['foo']
+    assert_equal response.payload.first.rules.first.goal, 37
   end
 
   def test_get_challenge_progress_instance
