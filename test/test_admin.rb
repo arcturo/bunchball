@@ -97,7 +97,7 @@ class TestAdmin < Test::Unit::TestCase
     params = {}
 
     return_value = {'Nitro' => {'res' => 'ok', 'challenges' =>
-        {'Challenge' => {'name' => 'A challenge', 'rules' => {'Rule' => 'foo' } }}
+        {'Challenge' => {'name' => 'A challenge', 'rules' => {'Rule' => {'goal' => '37' }}}}
       }
     }
 
@@ -105,7 +105,7 @@ class TestAdmin < Test::Unit::TestCase
 
     response = Bunchball::Nitro::Admin.get_challenges
     assert response.payload.first.is_a? Bunchball::Nitro::Challenge
-    assert_equal response.payload.first.rules, ['foo']
+    assert_equal response.payload.first.rules.first.goal, 37
   end
 
   def test_get_complete_user_record

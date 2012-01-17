@@ -45,12 +45,18 @@ class Bunchball::Nitro::Challenge
     @api_response['pointAward'].to_i
   end
 
-  # Make sure we return an enumerable for the rules applying to this challenge,
-  # even if there are none.
-  #
-  # TODO: Make these into Rule objects. Also TODO: make a Rule class for them.
   def rules
-    @api_response['rules'] ? Array(@api_response['rules']['Rule']) : []
+    unless @rules
+      # Make sure we return an enumerable for the rules applying to this challenge,
+      # even if there are none.
+      @rules = []
+      if @api_response['rules']
+        [@api_response['rules']['Rule']].flatten.compact.each do |rule|
+          @rules << Bunchball::Nitro::Rule.new(rule)
+        end
+      end
+    end
+    @rules
   end
 
   def trophy_url
