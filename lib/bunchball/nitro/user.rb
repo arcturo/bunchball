@@ -370,8 +370,25 @@ module Bunchball
 
       def self.get_pending_notifications(user_id, params = {})
         response = post("user.getPendingNotifications", {:userId => user_id}.merge(params))
-        # Two top-level keys here need returning, so we'll just return the whole thing.
-        Response.new response
+        response = Response.new(response)
+        payload = []
+
+        # Two top-level keys here need processing, 'notifications' and 'notificationStyles'
+        # However, if the first one is just True, then there were no pending notifications,
+        # so we just return the empty array as the payload.
+
+        unless response.payload['notifications'] == true   # actual true, not a 'truthy' value
+
+          # Stick the styles into an array in case they're not (if there was only one)
+          notification_styles = [response.payload['notificationStyles']['NotificationStyle']].flatten.compact
+
+          [response.payload['notifications']['Notification']].flatten.compact.each_with_index do |notification, index|
+            n = Notification.new(notification, notification_styles[index])
+            payload << n
+          end
+        end
+        response.payload = payload
+        response
       end
 
       def get_pending_notifications(params = {})

@@ -665,12 +665,20 @@ class TestUser < Test::Unit::TestCase
   def test_get_pending_notifications
     params = {:userId => 'wiggly'}
 
-    return_value = {'Nitro' => 'foo' }
+    return_value = {'Nitro' => {'res' => 'ok',
+      'notifications' =>
+        {'Notification' => {'name' => 'A Notification 1', 'points' => '25' }},
+      'notificationStyles' =>
+        {'NotificationStyle' => {'name' => 'A Notification Style 1', 'html' => 'foo' }}
+      }
+    }
 
     Bunchball::Nitro::User.expects(:post).with("user.getPendingNotifications", params).returns(return_value)
 
     response = Bunchball::Nitro::User.get_pending_notifications('wiggly')
-    assert_equal response.payload, 'foo'
+    assert response.payload.first.is_a? Bunchball::Nitro::Notification
+    assert_equal response.payload.first.name, 'A Notification 1'
+    assert_equal response.payload.first.style.name, 'A Notification Style 1'
   end
 
   def test_get_pending_notifications_instance
