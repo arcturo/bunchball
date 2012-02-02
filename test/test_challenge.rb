@@ -109,15 +109,17 @@ class TestChallenge < Test::Unit::TestCase
   end
 
   def test_start_time
-    challenge = make_challenge(sample_api_response.merge('startTime' => Time.now.to_i - 300))
+    test_time = Time.now.to_i - 300
+    challenge = make_challenge(sample_api_response.merge('startTime' => test_time))
     assert_equal challenge.start_time.class, Time
-    assert_equal challenge.start_time, Time.at((Time.now.to_i - 300))
+    assert_equal Time.at((test_time)), challenge.start_time
   end
 
   def test_end_time
-    challenge = make_challenge(sample_api_response.merge('endTime' => Time.now.to_i + 300))
+    test_time = Time.now.to_i + 300
+    challenge = make_challenge(sample_api_response.merge('endTime' => test_time))
     assert_equal challenge.end_time.class, Time
-    assert_equal challenge.end_time.class, Time
+    assert_equal Time.at((test_time)), challenge.end_time
   end
 
   def test_trophy_url
@@ -129,68 +131,4 @@ class TestChallenge < Test::Unit::TestCase
     challenge = make_challenge(sample_api_response.merge('thumbUrl' => 'foo'))
     assert_equal 'foo', challenge.trophy_thumb_url
   end
-
-  # 
-  # def test_valid
-  #   response = make_response({'Nitro' => {'res' => 'ok', 'groupUsers' => {'GroupUsers' => 'foo'} } })
-  #   assert response.valid?
-  # end
-  # 
-  # def test_invalid
-  #   response = make_response({'Nitro' => {'res' => 'err', 'groupUsers' => {'GroupUsers' => 'foo'} } })
-  #   assert ! response.valid?
-  # end
-  # 
-  # def test_error_nil
-  #   response = make_response({'Nitro' => {'res' => 'ok', 'groupUsers' => {'GroupUsers' => 'foo'} } })
-  #   assert response.errors.empty?
-  # end
-  # 
-  # def test_errors
-  #   response = make_response({'Nitro' => {'res' => 'err', 'Error' => {'GroupUsers' => 'foo'} } })
-  #   assert_not_nil response.errors
-  # end
-  # 
-  # def test_errors_bogus
-  #   # Make sure that we just ignore 'Error' value if 'res' is 'ok'
-  #   response = make_response({'Nitro' => {'res' => 'ok', 'Error' => {'GroupUsers' => 'foo'} } })
-  #   assert response.errors.empty?
-  # end
-  # 
-  # def test_method
-  #   response = make_response({'Nitro' => {'res' => 'ok', 'server' => 'froggy.com', 'method' => 'a_method' } })
-  #   assert_equal response.method, 'a_method'
-  # end
-  # 
-  # def test_nitro
-  #   api_response = {'Nitro' => {'res' => 'ok', 'server' => 'froggy.com', 'method' => 'a_method' } }
-  #   response = make_response(api_response)
-  #   assert_equal response.nitro, api_response['Nitro']
-  # end
-  # 
-  # def test_payload_default
-  #   api_response = {'Nitro' => {'res' => 'ok', 'server' => 'froggy.com', 'method' => 'a_method' } }
-  #   response = make_response(api_response)
-  #   assert_equal response.payload, response.nitro
-  # end
-  # 
-  # def test_payload_set
-  #   api_response = {'Nitro' => {'res' => 'ok', 'server' => 'froggy.com', 'method' => 'a_method',
-  #                   'UserResult' => 'foo'
-  #                  } }
-  #   response = make_response(api_response)
-  #   response.payload = response.nitro['UserResult']
-  #   assert_equal response.payload, 'foo'
-  # end
-  # 
-  # def test_res
-  #   response = make_response({'Nitro' => {'res' => 'poo' } })
-  #   assert_equal response.res, 'poo'
-  # end
-  # 
-  # def test_server
-  #   response = make_response({'Nitro' => {'res' => 'ok', 'server' => 'froggy.com' } })
-  #   assert_equal response.server, 'froggy.com'
-  # end
-  # 
 end
